@@ -42,8 +42,8 @@ function LoginSignup({ onLogin, isDarkMode }) {
         right: 0,
         height: "4px",
         background: isDarkMode
-          ? "linear-gradient(90deg, #E8DCC0, #004d40, #E8DCC0)"
-          : "linear-gradient(90deg, #231a13, #004d40, #231a13)",
+          ? `linear-gradient(90deg, #E8DCC0, #231a13, #E8DCC0)`
+          : `linear-gradient(90deg, #231a13, #E8DCC0, #231a13)`,
         opacity: 0.8
       }} />
       <div style={{
@@ -53,8 +53,8 @@ function LoginSignup({ onLogin, isDarkMode }) {
         right: 0,
         height: "4px",
         background: isDarkMode
-          ? "linear-gradient(90deg, #E8DCC0, #004d40, #E8DCC0)"
-          : "linear-gradient(90deg, #231a13, #004d40, #231a13)",
+          ? `linear-gradient(90deg, #E8DCC0, #231a13, #E8DCC0)`
+          : `linear-gradient(90deg, #231a13, #E8DCC0, #231a13)`,
         opacity: 0.8
       }} />
 
@@ -65,8 +65,8 @@ function LoginSignup({ onLogin, isDarkMode }) {
           style={{
             flex: 1,
             padding: "0.8rem 0",
-            background: isLoginMode ? (isDarkMode ? "#004d40" : "#E8DCC0") : "transparent",
-            color: isLoginMode ? (isDarkMode ? "#E8DCC0" : "#231a13") : (isDarkMode ? "#E8DCC0" : "#231a13"),
+            background: isLoginMode ? (isDarkMode ? "#E8DCC0" : "#231a13") : "transparent",
+            color: isLoginMode ? (isDarkMode ? "#231a13" : "#E8DCC0") : (isDarkMode ? "#E8DCC0" : "#231a13"),
             border: `1px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
             borderRight: "none",
             borderRadius: 0,
@@ -84,8 +84,8 @@ function LoginSignup({ onLogin, isDarkMode }) {
           style={{
             flex: 1,
             padding: "0.8rem 0",
-            background: !isLoginMode ? (isDarkMode ? "#004d40" : "#E8DCC0") : "transparent",
-            color: !isLoginMode ? (isDarkMode ? "#E8DCC0" : "#231a13") : (isDarkMode ? "#E8DCC0" : "#231a13"),
+            background: !isLoginMode ? (isDarkMode ? "#E8DCC0" : "#231a13") : "transparent",
+            color: !isLoginMode ? (isDarkMode ? "#231a13" : "#E8DCC0") : (isDarkMode ? "#E8DCC0" : "#231a13"),
             border: `1px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
             borderLeft: "none",
             borderRadius: 0,
@@ -121,7 +121,7 @@ function LoginSignup({ onLogin, isDarkMode }) {
           letterSpacing: "0.05em",
           color: isDarkMode ? "#E8DCC0" : "#231a13"
         }}>
-          {isLoginMode ? "Continue your artistic journey" : "Begin your artistic journey"}
+
         </p>
       </div>
 
@@ -144,7 +144,7 @@ function LoginSignup({ onLogin, isDarkMode }) {
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="Enter your username"
+            placeholder=""
             style={{
               width: "100%",
               padding: "0.9rem 1.2rem",
@@ -152,7 +152,7 @@ function LoginSignup({ onLogin, isDarkMode }) {
               borderRadius: 0,
               border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
               background: isDarkMode ? "rgba(35, 26, 19, 0.6)" : "rgba(251, 248, 241, 0.6)",
-              color: isDarkMode ? "#E8DCC0" : "#231a13",
+              color: isDarkMode ? "#231a13" : "#E8DCC0",
               outline: "none",
               fontFamily: "'Inter', sans-serif",
               transition: "all 0.3s ease",
@@ -178,7 +178,7 @@ function LoginSignup({ onLogin, isDarkMode }) {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
+              placeholder=""
               style={{
                 width: "100%",
                 padding: "0.9rem 1.2rem",
@@ -212,7 +212,7 @@ function LoginSignup({ onLogin, isDarkMode }) {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder={isLoginMode ? "Enter your password" : "Create a password"}
+            placeholder=""
             style={{
               width: "100%",
               padding: "0.9rem 1.2rem",
@@ -256,12 +256,12 @@ function LoginSignup({ onLogin, isDarkMode }) {
           style={{
             width: "100%",
             padding: "1rem 0",
-            backgroundColor: isDarkMode ? "#004d40" : "#E8DCC0",
+            backgroundColor: isDarkMode ? "#E8DCC0" : "#231a13",
             border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
             borderRadius: 0,
             fontWeight: 600,
             fontSize: "1.1rem",
-            color: isDarkMode ? "#E8DCC0" : "#231a13",
+            color: isDarkMode ? "#231a13" : "#E8DCC0",
             cursor: "pointer",
             boxShadow: isDarkMode
               ? "0 6px 20px rgba(0,77,64,0.4)"
@@ -272,26 +272,26 @@ function LoginSignup({ onLogin, isDarkMode }) {
             letterSpacing: "0.05em",
           }}
         >
-          {isLoginMode ? "Enter Gallery" : "Create Account"}
+          {isLoginMode ? "Login" : "Create Account"}
         </button>
 
         {/* Demo Info */}
-        {isLoginMode && isDarkMode && (
+        {isLoginMode && (
           <div style={{
             marginTop: "1.5rem",
             padding: "0.7rem",
-            background: "rgba(232, 220, 192, 0.1)",
-            border: "1px solid rgba(232, 220, 192, 0.3)",
+            background: isDarkMode ? "rgba(232, 220, 192, 0.1)" : "rgba(35, 26, 19, 0.1)",
+            border: `1px solid ${isDarkMode ? "rgba(232, 220, 192, 0.3)" : "rgba(35, 26, 19, 0.3)"}`,
             borderRadius: 0,
             textAlign: "center"
           }}>
             <small style={{
-              color: "#E8DCC0",
+              color: isDarkMode ? "#E8DCC0" : "#231a13",
               opacity: 0.7,
               fontSize: "0.8rem",
               letterSpacing: "0.05em"
             }}>
-              🎨 Demo: username "demo" - password "demo123"
+              Demo: username "demo" - password "demo123"
             </small>
           </div>
         )}
