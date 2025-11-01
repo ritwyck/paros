@@ -32,14 +32,14 @@ function LoginSignup({ onLogin }) {
         maxWidth: 400,
         margin: "0 auto",
         padding: 20,
-        backgroundColor: "#F5F1E7", // beige from palette
+        backgroundColor: "#F7F6F3", // gallery gray
         borderRadius: 16,
-        boxShadow: "0 4px 10px rgba(107, 76, 59, 0.3)",
-        fontFamily: "'Comfortaa', cursive",
-        color: "#6B4C3B", // brown from palette
+        boxShadow: "0 4px 10px rgba(0, 77, 64, 0.3)",
+        fontFamily: "'Inter', sans-serif",
+        color: "#231a13", // espresso
       }}
     >
-      <h2 style={{ textAlign: "center", marginBottom: "1rem", color: "#4B7F52" }}>
+      <h2 style={{ textAlign: "center", marginBottom: "1rem", color: "#004d40" }}>
         Join Paros
       </h2>
 
@@ -56,14 +56,14 @@ function LoginSignup({ onLogin }) {
           padding: "0.6rem 1rem",
           fontSize: "1rem",
           borderRadius: 12,
-          border: "2px solid #4B7F52",
+          border: "2px solid #004d40",
           marginBottom: 16,
           outline: "none",
           boxSizing: "border-box",
           transition: "border-color 0.3s ease",
         }}
-        onFocus={(e) => (e.target.style.borderColor = "#F9D342")}
-        onBlur={(e) => (e.target.style.borderColor = "#4B7F52")}
+        onFocus={(e) => (e.target.style.borderColor = "#004d40")}
+        onBlur={(e) => (e.target.style.borderColor = "#004d40")}
       />
 
       <label style={{ display: "block", marginBottom: 8, fontWeight: 600 }}>
@@ -86,8 +86,8 @@ function LoginSignup({ onLogin }) {
             objectFit: "cover",
             borderRadius: "50%",
             margin: "0 auto 16px",
-            border: "3px solid #F9D342",
-            boxShadow: "0 0 12px #F9D342aa",
+            border: "3px solid #004d40",
+            boxShadow: "0 0 12px #004d40aa",
           }}
         />
       )}
@@ -103,18 +103,18 @@ function LoginSignup({ onLogin }) {
         style={{
           width: "100%",
           padding: "0.75rem 0",
-          backgroundColor: "#F9D342",
+          backgroundColor: "#004d40",
           border: "none",
           borderRadius: 16,
           fontWeight: 700,
           fontSize: 18,
-          color: "#4B7F52",
+          color: "#FFFFFF",
           cursor: "pointer",
-          boxShadow: "0 4px 14px #F9D342aa",
+          boxShadow: "0 4px 14px #004d40aa",
           transition: "background-color 0.3s ease",
         }}
-        onMouseOver={(e) => (e.target.style.backgroundColor = "#4B7F52")}
-        onMouseOut={(e) => (e.target.style.backgroundColor = "#F9D342")}
+        onMouseOver={(e) => (e.target.style.backgroundColor = "#231a13")}
+        onMouseOut={(e) => (e.target.style.backgroundColor = "#004d40")}
       >
         Let’s Go!
       </button>

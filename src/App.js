@@ -74,7 +74,7 @@ function Listings({ listings }) {
           <li
             key={id}
             style={{
-              background: "#fafafa",
+              background: "#F7F6F3",
               marginBottom: 12,
               padding: 12,
               borderRadius: 8,
@@ -100,7 +100,7 @@ function Events({ events }) {
           <li
             key={id}
             style={{
-              background: "#fefefe",
+              background: "#F7F6F3",
               marginBottom: 12,
               padding: 12,
               borderRadius: 8,
@@ -125,14 +125,14 @@ function Navigation({ currentPage, setPage, onLogout }) {
       style={{
         display: "flex",
         justifyContent: "space-between",
-        backgroundColor: "#4B7F52", // green from theme
-        color: "#FCF8F2", // offwhite
+        backgroundColor: "#004d40", // emerald green
+        color: "#FFFFFF", // white
         padding: "1rem 2rem",
         alignItems: "center",
         fontSize: "1.15rem",
         fontWeight: "600",
         borderRadius: "0 0 16px 16px",
-        boxShadow: "0 4px 12px rgba(75, 127, 82, 0.2)",
+        boxShadow: "0 4px 12px rgba(0, 77, 64, 0.2)",
       }}
     >
       <div>
@@ -142,24 +142,11 @@ function Navigation({ currentPage, setPage, onLogout }) {
       </div>
       <div style={{ display: "flex", gap: "1.5rem" }}>
         <button
-          onClick={() => setPage("browse")}
-          style={{
-            background: "none",
-            border: "none",
-            color: currentPage === "browse" ? "#F9D342" : "#FCF8F2",
-            cursor: "pointer",
-            fontSize: 16,
-          }}
-          aria-current={currentPage === "browse"}
-        >
-          Listings
-        </button>
-        <button
           onClick={() => setPage("events")}
           style={{
             background: "none",
             border: "none",
-            color: currentPage === "events" ? "#F9D342" : "#FCF8F2",
+            color: currentPage === "events" ? "#004d40" : "#FFFFFF",
             cursor: "pointer",
             fontSize: 16,
           }}
@@ -167,12 +154,13 @@ function Navigation({ currentPage, setPage, onLogout }) {
         >
           Events
         </button>
+
         <button
           onClick={() => setPage("profile")}
           style={{
             background: "none",
             border: "none",
-            color: currentPage === "profile" ? "#F9D342" : "#FCF8F2",
+            color: currentPage === "profile" ? "#004d40" : "#FFFFFF",
             cursor: "pointer",
             fontSize: 16,
           }}
@@ -185,7 +173,7 @@ function Navigation({ currentPage, setPage, onLogout }) {
           style={{
             background: "none",
             border: "none",
-            color: "#FCF8F2",
+            color: "#FFFFFF",
             cursor: "pointer",
             fontSize: 16,
           }}

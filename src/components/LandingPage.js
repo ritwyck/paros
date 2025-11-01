@@ -40,14 +40,14 @@ export default function LandingPage({ onLoginSuccess }) {
         position: "relative",
         height: "100vh",
         overflow: "hidden",
-        color: "#FFF8E7",
-        fontFamily: "'Playfair Display', serif",
+        color: "#FFFFFF",
+        fontFamily: "'Inter', sans-serif",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         textAlign: "center",
         background:
-          "radial-gradient(circle at center, #FFF8E7 0%, #0B3D20 80%)",
+          "radial-gradient(circle at center, #F7F6F3 0%, #004d40 80%)",
       }}
     >
       {/* Background Leaflet map dims behind */}
@@ -56,11 +56,11 @@ export default function LandingPage({ onLoginSuccess }) {
           position: "absolute",
           inset: 0,
           zIndex: 0,
-          filter: "brightness(0.3) contrast(1.2)",
+          filter: "brightness(0.5) contrast(1.2)",
         }}
       >
         <MapContainer
-          center={[37.7749, -122.4194]}
+          center={[18.5204, 73.8567]}
           zoom={12}
           scrollWheelZoom={false}
           style={{ height: "100%", width: "100%" }}
@@ -84,10 +84,12 @@ export default function LandingPage({ onLoginSuccess }) {
           position: "absolute",
           inset: 0,
           background:
-            "radial-gradient(circle, rgba(11,61,32,0.6), rgba(62,38,23,0.8) 70%)",
+            "radial-gradient(circle, rgba(0,77,64,0.6), rgba(35,26,19,0.8) 70%)",
           zIndex: 1,
         }}
       />
+
+
 
       {/* Content */}
       <motion.div
@@ -104,27 +106,29 @@ export default function LandingPage({ onLoginSuccess }) {
             letterSpacing: "0.2em",
             margin: 0,
             userSelect: "none",
-            fontFamily: "'Playfair Display', serif",
+            fontFamily: "'Inter', sans-serif",
             textTransform: "uppercase",
-            textShadow: "0 6px 12px rgba(0,0,0,0.5)",
+            color: "#F5F1E7",
+            textShadow: "0 0 20px rgba(0,0,0,0.8), 0 6px 12px rgba(0,0,0,0.5)",
           }}
         >
           Paros
         </motion.h1>
 
-        <motion.p
+          <motion.p
           variants={itemVariants}
           style={{
             fontSize: "1.5rem",
-            marginTop: "2rem",
+            marginTop: "1rem",
             fontWeight: 400,
-            fontFamily: "'Gilroy', 'Comfortaa', sans-serif",
+            fontFamily: "'Inter', sans-serif",
             letterSpacing: "0.1em",
             userSelect: "none",
             maxWidth: 480,
             marginLeft: "auto",
             marginRight: "auto",
-            textShadow: "0 2px 6px rgba(0,0,0,0.3)",
+            color: "#F5F1E7",
+            textShadow: "0 0 10px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.3)",
           }}
         >
           Connect. Grow. Thrive.
@@ -132,27 +136,22 @@ export default function LandingPage({ onLoginSuccess }) {
 
         <motion.button
           variants={itemVariants}
-          whileHover={{ scale: 1.1, boxShadow: "0 0 40px 6px #F9D342" }}
           whileTap={{ scale: 0.95 }}
           onClick={() => onLoginSuccess({ username: "guest" })}
           style={{
-            marginTop: "4rem",
+            marginTop: "2rem",
             fontSize: "1.25rem",
             fontWeight: 700,
             letterSpacing: "0.1em",
             padding: "1.2rem 3.5rem",
-            borderRadius: 40,
-            border: "none",
+            borderRadius: 0,
+            border: "2px solid #004d40",
             cursor: "pointer",
-            backgroundColor: "#3E2617",
-            color: "#FFF8E7",
-            boxShadow: "0 0 30px rgba(62, 38, 23, 0.5)",
-            fontFamily: "'Gilroy', 'Comfortaa', sans-serif",
+            backgroundColor: "#FFFFFF",
+            color: "#004d40",
+            fontFamily: "'Inter', sans-serif",
             userSelect: "none",
-            transition: "background-color 0.3s ease",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#F9D342")}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#3E2617")}
           aria-label="Begin your journey"
         >
           Begin Your Journey

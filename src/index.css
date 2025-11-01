@@ -1,90 +1,239 @@
-/* Import Luxurious Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@900&family=Comfortaa:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
 
-/* Color Variables with refined palette */
+/* Gallery-inspired palette and fonts */
 :root {
-  --deep-green: #0B3D20;        /* Rich deep green background */
-  --dark-brown: #3E2617;        /* Sophisticated deep brown text & accents */
-  --light-yellow: #FFF8E7;      /* Soft off-white for overlays */
+  --white: #FFFFFF;
+  --emerald: #004d40;
+  --espresso: #231a13;
+  --gallery-gray: #F7F6F3;
+  --emerald-light: #e4f6f2;
+
+  /* Legacy color variables for consistency */
+  --color-green: var(--emerald);
+  --color-brown: var(--espresso);
+  --color-yellow: var(--emerald); /* Eradicated yellow, using emerald instead */
+  --color-beige: var(--gallery-gray);
+  --color-offwhite: var(--white);
+
+  --font-serif: 'Inter';
+  --font-sans: 'Inter', Arial, Helvetica, sans-serif;
 }
 
-/* Reset box-sizing */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-/* Body Basic Styles */
-body {
+/* Base styling */
+html, body, #root {
+  min-height: 100%;
   margin: 0;
-  height: 100%;
-  font-family: 'Comfortaa', cursive;
-  background-color: var(--deep-green);
-  color: var(--dark-brown);
-  line-height: 1.6;
+  background: var(--white);
+  color: var(--espresso);
+  font-family: var(--font-sans);
 }
 
-/* Headings */
+/* Typography */
 h1, h2, h3, h4 {
-  font-family: 'Playfair Display', serif;
+  font-family: var(--font-serif);
+  color: var(--emerald);
+  margin: 0 0 1.2rem 0;
+  letter-spacing: 0.03em;
   font-weight: 900;
-  letter-spacing: 0.2em;
-  margin: 0 0 1rem 0;
-  user-select: none;
-  color: var(--dark-brown);
-  text-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  line-height: 1.2;
+  line-height: 1.08;
+  text-shadow: 0 2px 18px rgba(0,77,64,0.07); /* green accent */
 }
 
-/* Large hero text */
 h1 {
-  font-size: 4.5rem;
+  font-size: 4rem;
+  margin-top: 2.2rem;
+  margin-bottom: 1.8rem;
   text-align: center;
-  margin-top: 2rem;
   text-transform: uppercase;
 }
 
-/* Subheading / description */
-p {
-  font-family: 'Comfortaa', cursive;
-  font-size: 1.5rem;
-  margin: 2rem auto;
-  max-width: 700px;
-  text-align: center;
-  line-height: 1.6;
-  color: #3E2617;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+h2 {
+  font-size: 2.25rem;
+  font-weight: 900;
 }
 
-/* Button styles - subtle, classy hover */
-button {
-  font-family: 'Comfortaa', cursive;
-  background-color: #3E2617; /* Dark brown base */
-  color: #FFF8E7; /* Light yellow text for contrast */
-  border: none;
-  border-radius: 40px;
-  padding: 1.2rem 4rem;
+h3 {
+  font-size: 1.4rem;
   font-weight: 700;
-  font-size: 1.3rem;
-  cursor: pointer;
-  box-shadow: inset 0 0 10px rgba(62, 38, 23, 0.3); /* Subtle inset shadow for depth */
-  transition: all 0.3s ease;
-  user-select: none;
 }
 
-button:hover,
-button:focus {
-  background-color: #5A3F26; /* Slightly lighter brown for hover */
-  box-shadow: inset 0 0 15px rgba(90, 63, 38, 0.4); /* Lighter inset for richness */
-  transform: scale(1.02);
-  outline: none;
+p, label, span, small, input, textarea, select, ul, ol {
+  font-family: var(--font-sans);
 }
 
-/* Additional UI elements can use the same palette and subtle shadows */
+p, label {
+  font-size: 1.15rem;
+  color: var(--espresso);
+  line-height: 1.65;
+}
+
+small {
+  color: var(--emerald);
+}
+
 a {
-  color: inherit;
+  color: var(--emerald);
+  text-decoration: underline;
+}
+
+a:hover, a:focus {
+  color: var(--espresso);
   text-decoration: none;
 }
 
-/* Utility classes for layout or overlays can be added here as needed, maintaining the artistic minimalism */
+/* Navigation Bar */
+nav {
+  background: var(--white);
+  border-bottom: 2px solid var(--emerald);
+  padding: 1.2rem 3vw 1.2rem 3vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 24px rgba(0,77,64,0.04);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+nav > strong {
+  font-size: 2rem;
+  color: var(--emerald);
+  letter-spacing: 0.16em;
+  font-family: var(--font-serif);
+}
+
+/* Modern gallery-style button */
+button, .btn {
+  background: var(--espresso);
+  color: var(--white);
+  font-family: var(--font-sans);
+  font-size: 1.09rem;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  padding: 0.84rem 2.4rem;
+  margin: 0.3rem 0.4rem;
+  box-shadow: 0 1px 8px rgba(35,26,19,0.09), 0 1.6px 5px rgba(0,77,64,0.07);
+  transition: border-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.17s, background 0.2s;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  overflow: hidden;
+}
+
+button:hover, button:focus, .btn:hover, .btn:focus {
+  color: var(--emerald);
+  background: var(--espresso);
+  border-bottom: 3px solid var(--emerald);
+  transform: translateY(-1px) scale(1.05);
+  box-shadow: 0 8px 28px rgba(0, 77, 64, 0.11), 0 1.6px 5px rgba(0,77,64,0.17);
+}
+
+/* Subtle fun effect: emerald bar wipes in below the button on hover */
+button::after, .btn::after {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--emerald);
+  opacity: 0;
+  transition: opacity 0.22s;
+}
+button:hover::after, button:focus::after, .btn:hover::after, .btn:focus::after {
+  opacity: 1;
+}
+
+/* Card and Panel Styling */
+.card, .panel {
+  background: var(--gallery-gray);
+  border-radius: 16px;
+  box-shadow: 0 2px 18px rgba(0,77,64,0.04);
+  padding: 2.2rem 2rem;
+  margin: 2.2rem 0;
+  transition: box-shadow 0.2s;
+  animation: fadeInCard 1.1s cubic-bezier(.45, .05, .55, 1);
+}
+
+/* Fade/slide Animation */
+@keyframes fadeInCard {
+  from { opacity: 0; transform: translateY(32px);}
+  to { opacity: 1; transform: none;}
+}
+
+/* Inputs and Selects */
+input, select, textarea {
+  background: var(--white);
+  color: var(--espresso);
+  font-size: 1.08rem;
+  font-family: var(--font-sans);
+  border: 1.6px solid var(--emerald);
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  margin-bottom: 1.1rem;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--espresso);
+  box-shadow: 0 2px 11px rgba(0,77,64,0.08);
+}
+
+/* Toggle Pills for Checkboxes */
+.toggle-pill {
+  display: inline-block;
+  background: var(--gallery-gray);
+  color: var(--espresso);
+  border-radius: 8px;
+  padding: 0.3rem 1.2rem;
+  margin: 0.25rem 0.45rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 1.3px solid var(--emerald);
+  cursor: pointer;
+  transition: background 0.22s, color 0.22s, border-color 0.22s;
+}
+.toggle-pill.checked {
+  background: var(--emerald);
+  color: var(--white);
+  border-color: var(--espresso);
+}
+
+/* Avatar */
+.rounded-avatar {
+  border-radius: 50%;
+  box-shadow: 0 2px 14px rgba(0,77,64,0.15);
+  border: 3px solid var(--emerald);
+  object-fit: cover;
+  width: 100px;
+  height: 100px;
+}
+
+/* Listings and Events Lists */
+ul.listings, ul.events {
+  list-style: none;
+  padding: 0;
+}
+ul.listings li, ul.events li {
+  margin: 1.2rem 0;
+  padding: 1.32rem 1.1rem 1.1rem 1.1rem;
+  border-radius: 16px;
+  background: var(--gallery-gray);
+  box-shadow: 0 1.2px 8px rgba(0,77,64,0.08);
+  font-size: 1.12rem;
+  animation: fadeInCard 1.11s cubic-bezier(.58,.05,.71,.95);
+}
+
+/* Utility - center content */
+.flex-center { display: flex; justify-content: center; align-items: center; }
+
+/* Section Animation for hero/headers */
+@keyframes fadeUpGallery {
+  from { opacity: 0; transform: translateY(56px);}
+  to   { opacity: 1; transform: none;}
+}
+.section-animated {
+  animation: fadeUpGallery 1.25s cubic-bezier(.41, .04, .62, 1) both;
+}
