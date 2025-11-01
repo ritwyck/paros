@@ -44,7 +44,7 @@ const scrollIndicatorVariants = {
   },
 };
 
-const ScrollIndicator = () => {
+const ScrollIndicator = ({ isDarkMode }) => {
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
@@ -64,11 +64,6 @@ const ScrollIndicator = () => {
         transform: "translateX(-50%)",
         cursor: "pointer",
         zIndex: 15,
-
-
-
-
-
       }}
       onClick={() => scrollToSection("about-section")}
     >
@@ -80,7 +75,7 @@ const ScrollIndicator = () => {
           height: 0,
           borderLeft: "1rem solid transparent",
           borderRight: "1rem solid transparent",
-          borderTop: "1.5rem solid #F5F1E7",
+          borderTop: `1.5rem solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
           filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.4))",
         }}
       />
@@ -88,7 +83,41 @@ const ScrollIndicator = () => {
   );
 };
 
-const GlobalMapBackground = () => {
+const ThemeToggleButton = ({ isDarkMode, onToggle }) => {
+  return (
+    <motion.button
+      onClick={onToggle}
+      whileHover={{
+        backgroundColor: isDarkMode ? "#231a13" : "#E8DCC0",
+        color: isDarkMode ? "#E8DCC0" : "#231a13",
+        border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
+        transition: { duration: 0.3 }
+      }}
+      whileTap={{ scale: 0.95 }}
+      style={{
+        position: "fixed",
+        top: 20,
+        left: 20, // Move to left side of screen
+        backgroundColor: isDarkMode ? "#E8DCC0" : "#231a13",
+        color: isDarkMode ? "#231a13" : "#E8DCC0",
+        border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
+        borderRadius: 0, // Sharp corners
+        padding: "0.6rem 1rem",
+        fontSize: "1rem",
+        fontWeight: 600,
+        cursor: "pointer",
+        boxShadow: `0 4px 16px ${isDarkMode ? "rgba(232, 220, 192, 0.3)" : "rgba(35, 26, 19, 0.3)"}`,
+        zIndex: 1000,
+        fontFamily: "'Inter', sans-serif",
+        transition: "all 0.3s ease",
+      }}
+    >
+      {isDarkMode ? "Light" : "Dark"}
+    </motion.button>
+  );
+};
+
+const GlobalMapBackground = ({ isDarkMode }) => {
   const mapRef = React.useRef();
   const { scrollYProgress } = useScroll();
 
@@ -145,15 +174,23 @@ const GlobalMapBackground = () => {
           tap={false}
           touchZoom={false}
         >
-          {/* Transport-focused dark map */}
+          {/* Conditionally render map tiles based on theme */}
           <TileLayer
-            url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://cartodb.com/attributions">CARTO</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+            url={
+              isDarkMode
+                ? "https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png"
+                : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            }
+            attribution={
+              isDarkMode
+                ? '&copy; <a href="https://cartodb.com/attributions">CARTO</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+                : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+            }
           />
         </MapContainer>
       </div>
 
-      {/* Black 25% transparency layer (z-index: 1) */}
+      {/* Conditional overlay based on theme (z-index: 1) */}
       <div style={{
         position: "fixed",
         top: 0,
@@ -161,21 +198,141 @@ const GlobalMapBackground = () => {
         right: 0,
         bottom: 0,
         zIndex: 1,
-        backgroundColor: "rgba(0,0,0,0.4)",
+        backgroundColor: isDarkMode ? "rgba(0,0,0,0.4)" : "rgba(255,255,255,0.4)",
         pointerEvents: "none"
       }} />
     </>
   );
 };
 
-const FloatingLoginButton = ({ onLoginSuccess, style }) => {
-  const [showAuth, setShowAuth] = useState(false);
+const FloatingLoginButton = ({ onModalOpen, isDarkMode, style }) => {
+  return (
+    <motion.button
+      whileHover={{
+        backgroundColor: isDarkMode ? "#231a13" : "#E8DCC0",
+        color: isDarkMode ? "#E8DCC0" : "#231a13",
+        border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
+        BoxShadow: `0 4px 16px ${isDarkMode ? "rgba(35,26,19,0.4)" : "rgba(232,220,192,0.4)"}`,
+        transition: { duration: 0.3 }
+      }}
+      onClick={onModalOpen}
+      style={{
+        position: "fixed",
+        top: 20,
+        right: 20,
+        backgroundColor: isDarkMode ? "#E8DCC0" : "#231a13",
+        color: isDarkMode ? "#231a13" : "#E8DCC0",
+        border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
+        borderRadius: 0, // Sharp corners
+        padding: "0.8rem 1.5rem",
+        fontSize: "1rem",
+        fontWeight: 600,
+        cursor: "pointer",
+        boxShadow: `0 4px 16px ${isDarkMode ? "rgba(232, 220, 192, 0.3)" : "rgba(35, 26, 19, 0.3)"}`,
+        zIndex: 1000,
+        fontFamily: "'Inter', sans-serif",
+        transition: "all 0.3s ease",
+        ...style,
+      }}
+    >
+      Login / Signup
+    </motion.button>
+  );
+};
+
+const JoinSection = ({ isDarkMode, onOpenModal }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.8 }}
+      style={{
+        maxWidth: 600,
+        textAlign: "center",
+        background: isDarkMode ? "rgba(35, 26, 19, 0.95)" : "rgba(251, 248, 241, 0.95)",
+        backdropFilter: "blur(20px)",
+        borderRadius: 20,
+        padding: "3rem",
+        boxShadow: "0 20px 60px rgba(0,0,0,0.1)",
+        border: "1px solid rgba(249, 245, 237, 0.3)",
+        fontFamily: "'Inter', sans-serif",
+        zIndex: 10, // Ensure it's above the black overlay
+        position: "relative",
+      }}
+    >
+      <h2
+        style={{
+          fontSize: "2.5rem",
+          fontWeight: 800,
+          color: isDarkMode ? "#E8DCC0" : "#231a13",
+          marginBottom: "2rem",
+          letterSpacing: "0.1em",
+        }}
+      >
+        Join Your Community Today
+      </h2>
+      <p
+        style={{
+          fontSize: "1.3rem",
+          color: isDarkMode ? "#E8DCC0" : "#231a13",
+          marginBottom: "3rem",
+          lineHeight: 1.6,
+        }}
+      >
+        Ready to connect, share, and grow with your neighbors? Create your profile and start building relationships that matter.
+      </p>
+      <motion.button
+        onClick={onOpenModal} // Opens the same modal
+        whileHover={{
+          backgroundColor: isDarkMode ? "#E8DCC0" : "#231a13",
+          color: isDarkMode ? "#231a13" : "#E8DCC0",
+          boxShadow: "0 4px 16px rgba(0,77,64,0.4)",
+          transition: { duration: 0.3 }
+        }}
+        style={{
+          backgroundColor: isDarkMode ? "#E8DCC0" : "#231a13",
+          color: isDarkMode ? "#231a13" : "#E8DCC0",
+          border: "none",
+          borderRadius: 0, // Sharp corners
+          padding: "1.2rem 3rem",
+          fontSize: "1.2rem",
+          fontWeight: 600,
+          cursor: "pointer",
+          fontFamily: "'Inter', sans-serif",
+          boxShadow: isDarkMode ? "0 4px 16px rgba(35,26,19,0.3)" : "0 4px 16px rgba(251,248,241,0.2)",
+          transition: "all 0.3s ease",
+        }}
+      >
+        Get Started
+      </motion.button>
+    </motion.div>
+  );
+};
+
+export default function LandingPage({ onLoginSuccess }) {
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // Check if user has a preference stored
+    const saved = localStorage.getItem('paros-theme');
+    return saved !== null ? JSON.parse(saved) : true; // Default to dark mode
+  });
+
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
 
   // Mock user storage (would use localStorage in real implementation)
   const mockUsers = [
     { username: "demo", email: "demo@paros.com", password: "demo123", profilePic: null }
   ];
+
+  // Save theme preference
+  useEffect(() => {
+    localStorage.setItem('paros-theme', JSON.stringify(isDarkMode));
+  }, [isDarkMode]);
+
+  const toggleTheme = () => setIsDarkMode(!isDarkMode);
+
+  const openModal = () => setShowAuthModal(true);
 
   const handleSubmit = (formData) => {
     if (isLogin) {
@@ -184,7 +341,7 @@ const FloatingLoginButton = ({ onLoginSuccess, style }) => {
         u.username === formData.username && u.password === formData.password
       );
       if (user) {
-        setShowAuth(false);
+        setShowAuthModal(false);
         onLoginSuccess({
           username: user.username,
           email: user.email,
@@ -196,7 +353,7 @@ const FloatingLoginButton = ({ onLoginSuccess, style }) => {
       }
     } else {
       // Mock signup - just accept the signup data
-      setShowAuth(false);
+      setShowAuthModal(false);
       onLoginSuccess({
         username: formData.username,
         email: formData.email,
@@ -208,210 +365,9 @@ const FloatingLoginButton = ({ onLoginSuccess, style }) => {
 
   return (
     <>
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setShowAuth(true)}
-        style={{
-          position: "fixed",
-          top: 20,
-          right: 20,
-          backgroundColor: "#004d40",
-          color: "#F5F1E7",
-          border: "none",
-          borderRadius: 8,
-          padding: "0.8rem 1.5rem",
-          fontSize: "1rem",
-          fontWeight: 600,
-          cursor: "pointer",
-          boxShadow: "0 4px 16px rgba(0, 77, 64, 0.3)",
-          zIndex: 1000,
-          fontFamily: "'Inter', sans-serif",
-          ...style,
-        }}
-      >
-        Login or Signup
-      </motion.button>
-
-      {showAuth && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            backgroundColor: "rgba(35, 26, 19, 0.8)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 10000,
-
-
-          }}
-          onClick={() => setShowAuth(false)}
-        >
-          <div
-            style={{
-              backgroundColor: "#F7F6F3",
-              borderRadius: 16,
-              padding: "2rem",
-              maxWidth: 450,
-              width: "90%",
-              maxHeight: "90vh",
-              overflow: "auto",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setShowAuth(false)}
-              style={{
-                position: "absolute",
-                top: 16,
-                right: 16,
-                background: "none",
-                border: "none",
-                fontSize: "1.5rem",
-                cursor: "pointer",
-                color: "#231a13",
-              }}
-            >
-              ✕
-            </button>
-
-            <div style={{ marginBottom: "2rem" }}>
-              <button
-                onClick={() => setIsLogin(true)}
-                style={{
-                  background: isLogin ? "#004d40" : "transparent",
-                  color: isLogin ? "#F5F1E7" : "#231a13",
-                  border: `2px solid ${isLogin ? "#004d40" : "#231a13"}`,
-                  borderRadius: "8px 0 0 8px",
-                  padding: "0.5rem 1rem",
-                  cursor: "pointer",
-                  fontWeight: 600,
-                }}
-              >
-                Login
-              </button>
-              <button
-                onClick={() => setIsLogin(false)}
-                style={{
-                  background: !isLogin ? "#004d40" : "transparent",
-                  color: !isLogin ? "#F5F1E7" : "#231a13",
-                  border: `2px solid ${!isLogin ? "#004d40" : "#231a13"}`,
-                  borderRadius: "0 8px 8px 0",
-                  borderLeft: "none",
-                  padding: "0.5rem 1rem",
-                  cursor: "pointer",
-                  fontWeight: 600,
-                }}
-              >
-                Signup
-              </button>
-            </div>
-
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              const formData = new FormData(e.target);
-              const data = {
-                username: formData.get('username'),
-                password: formData.get('password'),
-                email: isLogin ? '' : formData.get('email'),
-                profilePic: isLogin ? null : null,
-              };
-              handleSubmit(data);
-            }}>
-              <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
-                  Username
-                </label>
-                <input
-                  type="text"
-                  name="username"
-                  required
-                  placeholder="Enter username"
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem",
-                    border: "2px solid #004d40",
-                    borderRadius: 8,
-                    fontSize: "1rem",
-                  }}
-                />
-              </div>
-
-              {!isLogin && (
-                <div style={{ marginBottom: "1rem" }}>
-                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    placeholder="Enter email"
-                    style={{
-                      width: "100%",
-                      padding: "0.75rem",
-                      border: "2px solid #004d40",
-                      borderRadius: 8,
-                      fontSize: "1rem",
-                    }}
-                  />
-                </div>
-              )}
-
-              <div style={{ marginBottom: "1.5rem" }}>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
-                  Password
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  required
-                  placeholder="Enter password"
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem",
-                    border: "2px solid #004d40",
-                    borderRadius: 8,
-                    fontSize: "1rem",
-                  }}
-                />
-                {isLogin && (
-                  <small style={{ color: "#666", fontSize: "0.8rem", marginTop: "0.5rem", display: "block" }}>
-                    For demo: use username "demo" and password "demo123"
-                  </small>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                style={{
-                  width: "100%",
-                  backgroundColor: "#004d40",
-                  color: "#F5F1E7",
-                  border: "none",
-                  borderRadius: 8,
-                  padding: "1rem",
-                  fontSize: "1.1rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
-              >
-                {isLogin ? "Login" : "Create Account"}
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-    </>
-  );
-};
-
-export default function LandingPage({ onLoginSuccess }) {
-  return (
-    <>
-      <GlobalMapBackground />
-      <FloatingLoginButton onLoginSuccess={onLoginSuccess} />
+      <GlobalMapBackground isDarkMode={isDarkMode} />
+      <FloatingLoginButton onModalOpen={openModal} isDarkMode={isDarkMode} />
+      <ThemeToggleButton isDarkMode={isDarkMode} onToggle={toggleTheme} />
       <div style={{ overflowX: "hidden" }}>
         {/* Hero Section */}
         <section
@@ -440,6 +396,10 @@ export default function LandingPage({ onLoginSuccess }) {
           >
             <motion.h1
               variants={itemVariants}
+              whileHover={{
+                color: isDarkMode ? "rgba(0,150,136,0.8)" : "rgba(0,77,64,0.8)",
+                transition: { duration: 0.3 }
+              }}
               style={{
                 fontSize: "6rem",
                 fontWeight: 900,
@@ -448,8 +408,9 @@ export default function LandingPage({ onLoginSuccess }) {
                 userSelect: "none",
                 fontFamily: "'Inter', sans-serif",
                 textTransform: "uppercase",
-                color: "#F5F1E7",
-                textShadow: "0 0 20px rgba(0,0,0,0.8), 0 6px 12px rgba(0,0,0,0.5)",
+                color: isDarkMode ? "#E8DCC0" : "#231a13",
+                textShadow: isDarkMode ? "0 0 20px rgba(0,0,0,0.8), 0 6px 12px rgba(0,0,0,0.5)" : "0 4px 8px rgba(255,255,255,0.6)",
+                cursor: "pointer",
               }}
             >
               Paros
@@ -467,15 +428,15 @@ export default function LandingPage({ onLoginSuccess }) {
                 maxWidth: 480,
                 marginLeft: "auto",
                 marginRight: "auto",
-                color: "#F5F1E7",
-                textShadow: "0 0 10px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.3)",
+                color: isDarkMode ? "#E8DCC0" : "#231a13",
+                textShadow: isDarkMode ? "0 0 10px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.3)" : "0 2px 4px rgba(255,255,255,0.5)",
               }}
             >
               Connect. Grow. Thrive.
             </motion.p>
           </motion.div>
 
-          <ScrollIndicator />
+          <ScrollIndicator isDarkMode={isDarkMode} />
         </section>
 
         {/* About Section */}
@@ -501,12 +462,12 @@ export default function LandingPage({ onLoginSuccess }) {
               maxWidth: 800,
               textAlign: "center",
               fontFamily: "'Inter', sans-serif",
-              background: "rgba(247, 246, 243, 0.95)",
+              background: isDarkMode ? "rgba(35, 26, 19, 0.95)" : "rgba(251, 248, 241, 0.95)",
               backdropFilter: "blur(20px)",
               borderRadius: 20,
               padding: "3rem",
               boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
-              border: "1px solid rgba(245, 241, 231, 0.3)",
+              border: `1px solid ${isDarkMode ? "rgba(129, 115, 105, 0.3)" : "rgba(249, 245, 237, 0.3)"}`,
             }}
           >
             <h2
@@ -515,7 +476,7 @@ export default function LandingPage({ onLoginSuccess }) {
                 fontWeight: 800,
                 marginBottom: "2rem",
                 letterSpacing: "0.1em",
-                color: "#004d40",
+                color: isDarkMode ? "#E8DCC0" : "#231a13",
               }}
             >
               About Paros
@@ -525,8 +486,7 @@ export default function LandingPage({ onLoginSuccess }) {
                 fontSize: "1.4rem",
                 lineHeight: 1.6,
                 marginBottom: "2rem",
-                color: "#231a13",
-                opacity: 0.9,
+                color: isDarkMode ? "#E8DCC0" : "#231a13",
               }}
             >
               Paros is more than an app – it's a movement to bridge communities through meaningful connections.
@@ -558,12 +518,12 @@ export default function LandingPage({ onLoginSuccess }) {
               zIndex: 10,
               fontSize: "3rem",
               fontWeight: 800,
-              color: "#F5F1E7",
+              color: isDarkMode ? "#E8DCC0" : "#231a13",
               marginBottom: "4rem",
               textAlign: "center",
               fontFamily: "'Inter', sans-serif",
               letterSpacing: "0.1em",
-              textShadow: "0 4px 8px rgba(0,0,0,0.6)",
+              textShadow: isDarkMode ? "0 4px 8px rgba(0,0,0,0.6)" : "0 2px 8px rgba(255,255,255,0.6)",
             }}
           >
             What Makes Paros Special
@@ -606,9 +566,9 @@ export default function LandingPage({ onLoginSuccess }) {
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.8, delay: index * 0.1 }}
                 style={{
-                  background: "rgba(245, 241, 231, 0.95)",
+                  background: isDarkMode ? "rgba(35, 26, 19, 0.95)" : "rgba(251, 248, 241, 0.95)",
                   backdropFilter: "blur(20px)",
-                  border: "1px solid rgba(245, 241, 231, 0.3)",
+                  border: `1px solid ${isDarkMode ? "rgba(249, 245, 237, 0.3)" : "rgba(249, 245, 237, 0.3)"}`,
                   borderRadius: 16,
                   padding: "2rem",
                   textAlign: "center",
@@ -619,7 +579,7 @@ export default function LandingPage({ onLoginSuccess }) {
                   style={{
                     fontSize: "1.3rem",
                     fontWeight: 700,
-                    color: "#004d40",
+                    color: isDarkMode ? "#F5F1E7" : "#231a13",
                     marginBottom: "1rem",
                     fontFamily: "'Inter', sans-serif",
                     letterSpacing: "0.05em",
@@ -631,8 +591,7 @@ export default function LandingPage({ onLoginSuccess }) {
                   style={{
                     fontSize: "1rem",
                     lineHeight: 1.5,
-                    color: "#231a13",
-                    opacity: 0.9,
+                    color: isDarkMode ? "#E8DCC0" : "#231a13",
                     fontFamily: "'Inter', sans-serif",
                   }}
                 >
@@ -654,64 +613,26 @@ export default function LandingPage({ onLoginSuccess }) {
             padding: "4rem 1rem",
           }}
         >
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
-            style={{
-              maxWidth: 600,
-              textAlign: "center",
-              background: "rgba(255, 255, 255, 0.95)",
-              backdropFilter: "blur(20px)",
-              borderRadius: 20,
-              padding: "3rem",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.1)",
-              border: "1px solid rgba(0,0,0,0.1)",
-              fontFamily: "'Inter', sans-serif",
-              zIndex: 10, // Ensure it's above the black overlay
-              position: "relative",
-            }}
-          >
-            <h2
-              style={{
-                fontSize: "2.5rem",
-                fontWeight: 800,
-                color: "#004d40",
-                marginBottom: "2rem",
-                letterSpacing: "0.1em",
-              }}
-            >
-              Join Your Community Today
-            </h2>
-            <p
-              style={{
-                fontSize: "1.3rem",
-                color: "#231a13",
-                marginBottom: "3rem",
-                lineHeight: 1.6,
-              }}
-            >
-              Ready to connect, share, and grow with your neighbors? Create your profile and start building relationships that matter.
-            </p>
-            <button
-              onClick={() => onLoginSuccess({ username: "guest" })}
-              style={{
-                backgroundColor: "#004d40",
-                color: "#FFFFFF",
-                border: "none",
-                borderRadius: 16,
-                padding: "1.2rem 3rem",
-                fontSize: "1.2rem",
-                fontWeight: 600,
-                cursor: "pointer",
-                fontFamily: "'Inter', sans-serif",
-              }}
-            >
-              Get Started
-            </button>
-          </motion.div>
+          <JoinSection isDarkMode={isDarkMode} onOpenModal={openModal} />
         </section>
+
+        {/* Auth Modal Overlay */}
+        {showAuthModal && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              backgroundColor: "rgba(35, 26, 19, 0.8)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 10000,
+            }}
+            onClick={() => setShowAuthModal(false)}
+          >
+            <LoginSignup onLogin={handleSubmit} isDarkMode={isDarkMode} />
+          </div>
+        )}
 
         {/* Footer - Solid black end with proper height */}
         <footer
