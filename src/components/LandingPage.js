@@ -64,6 +64,11 @@ const ScrollIndicator = () => {
         transform: "translateX(-50%)",
         cursor: "pointer",
         zIndex: 15,
+
+
+
+
+
       }}
       onClick={() => scrollToSection("about-section")}
     >
@@ -83,33 +88,25 @@ const ScrollIndicator = () => {
   );
 };
 
-// Global map component that pans vertically with scroll (no zoom changes)
 const GlobalMapBackground = () => {
   const mapRef = React.useRef();
   const { scrollYProgress } = useScroll();
 
-  // Define scroll-based latitude changes (north-south movement)
-  const latitudeRange = [18.58, 18.52]; // Start higher, move south/south-east as we scroll
-  const baseLongitude = 73.8567; // Keep longitude fairly constant
-
-  // Animate map latitude based on scroll progress (panning vertically)
+  // Navigate map southward as user scrolls vertically (down the map with text)
   React.useEffect(() => {
     const unsubscribe = scrollYProgress.on("change", (progress) => {
       if (mapRef.current) {
-        // Calculate latitude based on scroll progress
-        const startLat = latitudeRange[0];
-        const endLat = latitudeRange[1];
+        // Calculate latitude southward as user scrolls down the text
+        const startLat = 18.58;  // Start higher on map
+        const endLat = 18.45;    // End lower on map
         const lat = startLat + (endLat - startLat) * progress;
 
+        const lng = 73.8567; // Keep longitude constant (straight south)
+
         try {
-          mapRef.current.setView([lat, baseLongitude], 15, { animate: true, duration: 0.5 });
+          mapRef.current.setView([lat, lng], 14, { animate: true, duration: 0.5 });
         } catch (error) {
-          // If there's an error, just update without animation
-          try {
-            mapRef.current.setView([lat, baseLongitude], 15, { animate: false });
-          } catch (error2) {
-            // Silent fail if map operations fail
-          }
+          // Silent fail if map operations fail
         }
       }
     });
@@ -118,52 +115,56 @@ const GlobalMapBackground = () => {
   }, [scrollYProgress]);
 
   return (
-    <div style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      zIndex: 0,
-      height: "100vh",
-      width: "100vw"
-    }}>
-      <MapContainer
-        ref={mapRef}
-        center={[18.58, 73.8567]} // Start higher latitude (north)
-        zoom={15} // Fixed zoom level throughout
-        scrollWheelZoom={false}
-        style={{
-          height: "100vh",
-          width: "100vw"
-        }}
-        attributionControl={false}
-        zoomControl={false}
-        dragging={false}
-        doubleClickZoom={false}
-        keyboard={false}
-        boxZoom={false}
-        tap={false}
-        touchZoom={false}
-        whenReady={() => console.log("Map is ready")}
-      >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-      </MapContainer>
+    <>
+      {/* Scrolling Map Layer (z-index: 0) */}
+      <div style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 0,
+        height: "100vh",
+        width: "100vw"
+      }}>
+        <MapContainer
+          ref={mapRef}
+          center={[18.58, 73.8567]} // Start position
+          zoom={14} // Consistent zoom level throughout
+          scrollWheelZoom={false}
+          style={{
+            height: "100vh",
+            width: "100vw"
+          }}
+          attributionControl={false}
+          zoomControl={false}
+          dragging={false}
+          doubleClickZoom={false}
+          keyboard={false}
+          boxZoom={false}
+          tap={false}
+          touchZoom={false}
+        >
+          {/* Transport-focused dark map */}
+          <TileLayer
+            url="https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://cartodb.com/attributions">CARTO</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+          />
+        </MapContainer>
+      </div>
 
-      {/* Strong green vignette overlay on the map for text readability */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: "radial-gradient(circle at center, rgba(0,77,64,0.85) 0%, rgba(0,77,64,0.95) 70%)",
-          pointerEvents: "none",
-          zIndex: 1,
-        }}
-      />
-    </div>
+      {/* Black 25% transparency layer (z-index: 1) */}
+      <div style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 1,
+        backgroundColor: "rgba(0,0,0,0.4)",
+        pointerEvents: "none"
+      }} />
+    </>
   );
 };
 
@@ -242,6 +243,8 @@ const FloatingLoginButton = ({ onLoginSuccess, style }) => {
             alignItems: "center",
             justifyContent: "center",
             zIndex: 10000,
+
+
           }}
           onClick={() => setShowAuth(false)}
         >
@@ -420,6 +423,13 @@ export default function LandingPage({ onLoginSuccess }) {
             alignItems: "center",
             textAlign: "center",
             fontFamily: "'Inter', sans-serif",
+
+
+
+
+
+
+
           }}
         >
           <motion.div
@@ -659,6 +669,8 @@ export default function LandingPage({ onLoginSuccess }) {
               boxShadow: "0 20px 60px rgba(0,0,0,0.1)",
               border: "1px solid rgba(0,0,0,0.1)",
               fontFamily: "'Inter', sans-serif",
+              zIndex: 10, // Ensure it's above the black overlay
+              position: "relative",
             }}
           >
             <h2
@@ -701,19 +713,20 @@ export default function LandingPage({ onLoginSuccess }) {
           </motion.div>
         </section>
 
-        {/* Footer - Solid background covering map */}
+        {/* Footer - Solid black end with proper height */}
         <footer
           style={{
             position: "relative",
-            backgroundColor: "#231a13",
+            backgroundColor: "#000000",
             color: "#F5F1E7",
-            padding: "2rem 1rem 1rem",
+            padding: "3rem 1rem 2rem",
             textAlign: "center",
             fontFamily: "'Inter', sans-serif",
-            zIndex: 10, // Above the map
+            zIndex: 10, // Above everything
+            // THIS IS THE END - NO MORE SCROLLING
           }}
         >
-          {/* Additional solid overlay to ensure no map shows through */}
+          {/* Solid black overlay covering entire footer area */}
           <div
             style={{
               position: "absolute",
@@ -721,7 +734,7 @@ export default function LandingPage({ onLoginSuccess }) {
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: "#231a13",
+              backgroundColor: "#000000",
               zIndex: -1,
             }}
           />
@@ -741,7 +754,7 @@ export default function LandingPage({ onLoginSuccess }) {
             <div>
               <h3
                 style={{
-                  color: "#004d40",
+                  color: "#F5F1E7",
                   marginBottom: "1rem",
                   fontSize: "1.5rem",
                   fontWeight: 700,
@@ -749,28 +762,73 @@ export default function LandingPage({ onLoginSuccess }) {
               >
                 Paros
               </h3>
-              <p style={{ opacity: 0.8 }}>
+              <p style={{
+                color: "#F5F1E7",
+                opacity: 0.9
+              }}>
                 Bringing communities closer through meaningful connections.
               </p>
             </div>
 
             <div>
-              <h4 style={{ marginBottom: "1rem", fontWeight: 600 }}>Community</h4>
-              <ul style={{ listStyle: "none", padding: 0, opacity: 0.8 }}>
-                <li style={{ marginBottom: "0.5rem" }}>Local Services</li>
-                <li style={{ marginBottom: "0.5rem" }}>Skill Sharing</li>
-                <li style={{ marginBottom: "0.5rem" }}>Events</li>
-                <li style={{ marginBottom: "0.5rem" }}>Goods Exchange</li>
+              <h4 style={{
+                color: "#F5F1E7",
+                marginBottom: "1rem",
+                fontWeight: 600,
+                fontSize: "1.2rem"
+              }}>Community</h4>
+              <ul style={{ listStyle: "none", padding: 0 }}>
+                <li style={{
+                  color: "#F5F1E7",
+                  marginBottom: "0.5rem",
+                  opacity: 0.9
+                }}>Local Services</li>
+                <li style={{
+                  color: "#F5F1E7",
+                  marginBottom: "0.5rem",
+                  opacity: 0.9
+                }}>Skill Sharing</li>
+                <li style={{
+                  color: "#F5F1E7",
+                  marginBottom: "0.5rem",
+                  opacity: 0.9
+                }}>Events</li>
+                <li style={{
+                  color: "#F5F1E7",
+                  marginBottom: "0.5rem",
+                  opacity: 0.9
+                }}>Goods Exchange</li>
               </ul>
             </div>
 
             <div>
-              <h4 style={{ marginBottom: "1rem", fontWeight: 600 }}>Connect</h4>
-              <ul style={{ listStyle: "none", padding: 0, opacity: 0.8 }}>
-                <li style={{ marginBottom: "0.5rem" }}>Join Community</li>
-                <li style={{ marginBottom: "0.5rem" }}>Find Neighbors</li>
-                <li style={{ marginBottom: "0.5rem" }}>Share Skills</li>
-                <li style={{ marginBottom: "0.5rem" }}>Organize Events</li>
+              <h4 style={{
+                color: "#F5F1E7",
+                marginBottom: "1rem",
+                fontWeight: 600,
+                fontSize: "1.2rem"
+              }}>Connect</h4>
+              <ul style={{ listStyle: "none", padding: 0 }}>
+                <li style={{
+                  color: "#F5F1E7",
+                  marginBottom: "0.5rem",
+                  opacity: 0.9
+                }}>Join Community</li>
+                <li style={{
+                  color: "#F5F1E7",
+                  marginBottom: "0.5rem",
+                  opacity: 0.9
+                }}>Find Neighbors</li>
+                <li style={{
+                  color: "#F5F1E7",
+                  marginBottom: "0.5rem",
+                  opacity: 0.9
+                }}>Share Skills</li>
+                <li style={{
+                  color: "#F5F1E7",
+                  marginBottom: "0.5rem",
+                  opacity: 0.9
+                }}>Organize Events</li>
               </ul>
             </div>
           </div>
@@ -779,12 +837,14 @@ export default function LandingPage({ onLoginSuccess }) {
             style={{
               position: "relative",
               zIndex: 1,
-              borderTop: "1px solid rgba(245, 241, 231, 0.1)",
+              borderTop: "1px solid rgba(245, 241, 231, 0.3)",
               paddingTop: "2rem",
-              opacity: 0.6,
             }}
           >
-            <p>© 2025 Paros. Building stronger communities together.</p>
+            <p style={{
+              color: "#F5F1E7",
+              opacity: 0.8
+            }}>© 2025 Paros. Building stronger communities together.</p>
           </div>
         </footer>
       </div>
