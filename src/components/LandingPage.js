@@ -1,7 +1,8 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { MapContainer, TileLayer } from "react-leaflet";
 import L from "leaflet";
+import LoginSignup from "./LoginSignup";
 
 import "../index.css"; // Your global CSS with new palette and fonts
 
@@ -32,131 +33,761 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 1, ease: "easeOut" } },
 };
 
-export default function LandingPage({ onLoginSuccess }) {
-  return (
-    <section
-      className="landing-section"
-      style={{
-        position: "relative",
-        height: "100vh",
-        overflow: "hidden",
-        color: "#FFFFFF",
-        fontFamily: "'Inter', sans-serif",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        textAlign: "center",
-        background:
-          "radial-gradient(circle at center, #F7F6F3 0%, #004d40 80%)",
-      }}
-    >
-      {/* Background Leaflet map dims behind */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          zIndex: 0,
-          filter: "brightness(0.5) contrast(1.2)",
-        }}
-      >
-        <MapContainer
-          center={[18.5204, 73.8567]}
-          zoom={12}
-          scrollWheelZoom={false}
-          style={{ height: "100%", width: "100%" }}
-          attributionControl={false}
-          zoomControl={false}
-          dragging={false}
-          doubleClickZoom={false}
-          keyboard={false}
-          boxZoom={false}
-          tap={false}
-          touchZoom={false}
-        >
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        </MapContainer>
-      </div>
+const scrollIndicatorVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 1,
+      delay: 3,
+    },
+  },
+};
 
-      {/* Dark vignette overlay for depth */}
+const ScrollIndicator = () => {
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  return (
+    <motion.div
+      variants={scrollIndicatorVariants}
+      initial="hidden"
+      animate="visible"
+      style={{
+        position: "absolute",
+        bottom: "2rem",
+        left: "50%",
+        transform: "translateX(-50%)",
+        cursor: "pointer",
+        zIndex: 15,
+      }}
+      onClick={() => scrollToSection("about-section")}
+    >
+      <motion.div
+        animate={{ y: [0, 10, 0] }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          width: 0,
+          height: 0,
+          borderLeft: "1rem solid transparent",
+          borderRight: "1rem solid transparent",
+          borderTop: "1.5rem solid #F5F1E7",
+          filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.4))",
+        }}
+      />
+    </motion.div>
+  );
+};
+
+// Global map component that pans vertically with scroll (no zoom changes)
+const GlobalMapBackground = () => {
+  const mapRef = React.useRef();
+  const { scrollYProgress } = useScroll();
+
+  // Define scroll-based latitude changes (north-south movement)
+  const latitudeRange = [18.58, 18.52]; // Start higher, move south/south-east as we scroll
+  const baseLongitude = 73.8567; // Keep longitude fairly constant
+
+  // Animate map latitude based on scroll progress (panning vertically)
+  React.useEffect(() => {
+    const unsubscribe = scrollYProgress.on("change", (progress) => {
+      if (mapRef.current) {
+        // Calculate latitude based on scroll progress
+        const startLat = latitudeRange[0];
+        const endLat = latitudeRange[1];
+        const lat = startLat + (endLat - startLat) * progress;
+
+        try {
+          mapRef.current.setView([lat, baseLongitude], 15, { animate: true, duration: 0.5 });
+        } catch (error) {
+          // If there's an error, just update without animation
+          try {
+            mapRef.current.setView([lat, baseLongitude], 15, { animate: false });
+          } catch (error2) {
+            // Silent fail if map operations fail
+          }
+        }
+      }
+    });
+
+    return unsubscribe;
+  }, [scrollYProgress]);
+
+  return (
+    <div style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 0,
+      height: "100vh",
+      width: "100vw"
+    }}>
+      <MapContainer
+        ref={mapRef}
+        center={[18.58, 73.8567]} // Start higher latitude (north)
+        zoom={15} // Fixed zoom level throughout
+        scrollWheelZoom={false}
+        style={{
+          height: "100vh",
+          width: "100vw"
+        }}
+        attributionControl={false}
+        zoomControl={false}
+        dragging={false}
+        doubleClickZoom={false}
+        keyboard={false}
+        boxZoom={false}
+        tap={false}
+        touchZoom={false}
+        whenReady={() => console.log("Map is ready")}
+      >
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      </MapContainer>
+
+      {/* Strong green vignette overlay on the map for text readability */}
       <div
         style={{
-          pointerEvents: "none",
           position: "absolute",
-          inset: 0,
-          background:
-            "radial-gradient(circle, rgba(0,77,64,0.6), rgba(35,26,19,0.8) 70%)",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: "radial-gradient(circle at center, rgba(0,77,64,0.85) 0%, rgba(0,77,64,0.95) 70%)",
+          pointerEvents: "none",
           zIndex: 1,
         }}
       />
+    </div>
+  );
+};
 
+const FloatingLoginButton = ({ onLoginSuccess, style }) => {
+  const [showAuth, setShowAuth] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
 
+  // Mock user storage (would use localStorage in real implementation)
+  const mockUsers = [
+    { username: "demo", email: "demo@paros.com", password: "demo123", profilePic: null }
+  ];
 
-      {/* Content */}
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        style={{ position: "relative", zIndex: 10, maxWidth: 720, padding: "0 1rem" }}
+  const handleSubmit = (formData) => {
+    if (isLogin) {
+      // Mock login logic
+      const user = mockUsers.find(u =>
+        u.username === formData.username && u.password === formData.password
+      );
+      if (user) {
+        setShowAuth(false);
+        onLoginSuccess({
+          username: user.username,
+          email: user.email,
+          profilePic: user.profilePic,
+          isLoggedIn: true
+        });
+      } else {
+        alert("Invalid credentials. Use demo/demo123 to test login.");
+      }
+    } else {
+      // Mock signup - just accept the signup data
+      setShowAuth(false);
+      onLoginSuccess({
+        username: formData.username,
+        email: formData.email,
+        profilePic: formData.profilePic,
+        isLoggedIn: true
+      });
+    }
+  };
+
+  return (
+    <>
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => setShowAuth(true)}
+        style={{
+          position: "fixed",
+          top: 20,
+          right: 20,
+          backgroundColor: "#004d40",
+          color: "#F5F1E7",
+          border: "none",
+          borderRadius: 8,
+          padding: "0.8rem 1.5rem",
+          fontSize: "1rem",
+          fontWeight: 600,
+          cursor: "pointer",
+          boxShadow: "0 4px 16px rgba(0, 77, 64, 0.3)",
+          zIndex: 1000,
+          fontFamily: "'Inter', sans-serif",
+          ...style,
+        }}
       >
-        <motion.h1
-          variants={itemVariants}
-          style={{
-            fontSize: "6rem",
-            fontWeight: 900,
-            letterSpacing: "0.2em",
-            margin: 0,
-            userSelect: "none",
-            fontFamily: "'Inter', sans-serif",
-            textTransform: "uppercase",
-            color: "#F5F1E7",
-            textShadow: "0 0 20px rgba(0,0,0,0.8), 0 6px 12px rgba(0,0,0,0.5)",
-          }}
-        >
-          Paros
-        </motion.h1>
+        Login or Signup
+      </motion.button>
 
-          <motion.p
-          variants={itemVariants}
+      {showAuth && (
+        <div
           style={{
-            fontSize: "1.5rem",
-            marginTop: "1rem",
-            fontWeight: 400,
-            fontFamily: "'Inter', sans-serif",
-            letterSpacing: "0.1em",
-            userSelect: "none",
-            maxWidth: 480,
-            marginLeft: "auto",
-            marginRight: "auto",
-            color: "#F5F1E7",
-            textShadow: "0 0 10px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.3)",
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(35, 26, 19, 0.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 10000,
           }}
+          onClick={() => setShowAuth(false)}
         >
-          Connect. Grow. Thrive.
-        </motion.p>
+          <div
+            style={{
+              backgroundColor: "#F7F6F3",
+              borderRadius: 16,
+              padding: "2rem",
+              maxWidth: 450,
+              width: "90%",
+              maxHeight: "90vh",
+              overflow: "auto",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowAuth(false)}
+              style={{
+                position: "absolute",
+                top: 16,
+                right: 16,
+                background: "none",
+                border: "none",
+                fontSize: "1.5rem",
+                cursor: "pointer",
+                color: "#231a13",
+              }}
+            >
+              ✕
+            </button>
 
-        <motion.button
-          variants={itemVariants}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => onLoginSuccess({ username: "guest" })}
+            <div style={{ marginBottom: "2rem" }}>
+              <button
+                onClick={() => setIsLogin(true)}
+                style={{
+                  background: isLogin ? "#004d40" : "transparent",
+                  color: isLogin ? "#F5F1E7" : "#231a13",
+                  border: `2px solid ${isLogin ? "#004d40" : "#231a13"}`,
+                  borderRadius: "8px 0 0 8px",
+                  padding: "0.5rem 1rem",
+                  cursor: "pointer",
+                  fontWeight: 600,
+                }}
+              >
+                Login
+              </button>
+              <button
+                onClick={() => setIsLogin(false)}
+                style={{
+                  background: !isLogin ? "#004d40" : "transparent",
+                  color: !isLogin ? "#F5F1E7" : "#231a13",
+                  border: `2px solid ${!isLogin ? "#004d40" : "#231a13"}`,
+                  borderRadius: "0 8px 8px 0",
+                  borderLeft: "none",
+                  padding: "0.5rem 1rem",
+                  cursor: "pointer",
+                  fontWeight: 600,
+                }}
+              >
+                Signup
+              </button>
+            </div>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target);
+              const data = {
+                username: formData.get('username'),
+                password: formData.get('password'),
+                email: isLogin ? '' : formData.get('email'),
+                profilePic: isLogin ? null : null,
+              };
+              handleSubmit(data);
+            }}>
+              <div style={{ marginBottom: "1rem" }}>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                  Username
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  required
+                  placeholder="Enter username"
+                  style={{
+                    width: "100%",
+                    padding: "0.75rem",
+                    border: "2px solid #004d40",
+                    borderRadius: 8,
+                    fontSize: "1rem",
+                  }}
+                />
+              </div>
+
+              {!isLogin && (
+                <div style={{ marginBottom: "1rem" }}>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    required
+                    placeholder="Enter email"
+                    style={{
+                      width: "100%",
+                      padding: "0.75rem",
+                      border: "2px solid #004d40",
+                      borderRadius: 8,
+                      fontSize: "1rem",
+                    }}
+                  />
+                </div>
+              )}
+
+              <div style={{ marginBottom: "1.5rem" }}>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                  Password
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  required
+                  placeholder="Enter password"
+                  style={{
+                    width: "100%",
+                    padding: "0.75rem",
+                    border: "2px solid #004d40",
+                    borderRadius: 8,
+                    fontSize: "1rem",
+                  }}
+                />
+                {isLogin && (
+                  <small style={{ color: "#666", fontSize: "0.8rem", marginTop: "0.5rem", display: "block" }}>
+                    For demo: use username "demo" and password "demo123"
+                  </small>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                style={{
+                  width: "100%",
+                  backgroundColor: "#004d40",
+                  color: "#F5F1E7",
+                  border: "none",
+                  borderRadius: 8,
+                  padding: "1rem",
+                  fontSize: "1.1rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                {isLogin ? "Login" : "Create Account"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default function LandingPage({ onLoginSuccess }) {
+  return (
+    <>
+      <GlobalMapBackground />
+      <FloatingLoginButton onLoginSuccess={onLoginSuccess} />
+      <div style={{ overflowX: "hidden" }}>
+        {/* Hero Section */}
+        <section
           style={{
-            marginTop: "2rem",
-            fontSize: "1.25rem",
-            fontWeight: 700,
-            letterSpacing: "0.1em",
-            padding: "1.2rem 3.5rem",
-            borderRadius: 0,
-            border: "2px solid #004d40",
-            cursor: "pointer",
-            backgroundColor: "#FFFFFF",
-            color: "#004d40",
+            position: "relative",
+            height: "100vh",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            textAlign: "center",
             fontFamily: "'Inter', sans-serif",
-            userSelect: "none",
           }}
-          aria-label="Begin your journey"
         >
-          Begin Your Journey
-        </motion.button>
-      </motion.div>
-    </section>
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            style={{ position: "relative", zIndex: 10, maxWidth: 720, padding: "0 1rem" }}
+          >
+            <motion.h1
+              variants={itemVariants}
+              style={{
+                fontSize: "6rem",
+                fontWeight: 900,
+                letterSpacing: "0.2em",
+                margin: 0,
+                userSelect: "none",
+                fontFamily: "'Inter', sans-serif",
+                textTransform: "uppercase",
+                color: "#F5F1E7",
+                textShadow: "0 0 20px rgba(0,0,0,0.8), 0 6px 12px rgba(0,0,0,0.5)",
+              }}
+            >
+              Paros
+            </motion.h1>
+
+            <motion.p
+              variants={itemVariants}
+              style={{
+                fontSize: "1.5rem",
+                marginTop: "1rem",
+                fontWeight: 400,
+                fontFamily: "'Inter', sans-serif",
+                letterSpacing: "0.1em",
+                userSelect: "none",
+                maxWidth: 480,
+                marginLeft: "auto",
+                marginRight: "auto",
+                color: "#F5F1E7",
+                textShadow: "0 0 10px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.3)",
+              }}
+            >
+              Connect. Grow. Thrive.
+            </motion.p>
+          </motion.div>
+
+          <ScrollIndicator />
+        </section>
+
+        {/* About Section */}
+        <section
+          id="about-section"
+          style={{
+            position: "relative",
+            minHeight: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "4rem 1rem",
+          }}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            style={{
+              position: "relative",
+              zIndex: 10,
+              maxWidth: 800,
+              textAlign: "center",
+              fontFamily: "'Inter', sans-serif",
+              background: "rgba(247, 246, 243, 0.95)",
+              backdropFilter: "blur(20px)",
+              borderRadius: 20,
+              padding: "3rem",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
+              border: "1px solid rgba(245, 241, 231, 0.3)",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "3.5rem",
+                fontWeight: 800,
+                marginBottom: "2rem",
+                letterSpacing: "0.1em",
+                color: "#004d40",
+              }}
+            >
+              About Paros
+            </h2>
+            <p
+              style={{
+                fontSize: "1.4rem",
+                lineHeight: 1.6,
+                marginBottom: "2rem",
+                color: "#231a13",
+                opacity: 0.9,
+              }}
+            >
+              Paros is more than an app – it's a movement to bridge communities through meaningful connections.
+              We believe that every neighborhood holds untapped potential for collaboration, growth, and mutual support.
+              Join a platform where locals share skills, offer services, exchange goods, and build lasting relationships.
+            </p>
+          </motion.div>
+        </section>
+
+        {/* Features Section */}
+        <section
+          style={{
+            position: "relative",
+            minHeight: "100vh",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "4rem 1rem",
+          }}
+        >
+          <motion.h2
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            style={{
+              position: "relative",
+              zIndex: 10,
+              fontSize: "3rem",
+              fontWeight: 800,
+              color: "#F5F1E7",
+              marginBottom: "4rem",
+              textAlign: "center",
+              fontFamily: "'Inter', sans-serif",
+              letterSpacing: "0.1em",
+              textShadow: "0 4px 8px rgba(0,0,0,0.6)",
+            }}
+          >
+            What Makes Paros Special
+          </motion.h2>
+
+          <div
+            style={{
+              position: "relative",
+              zIndex: 10,
+              display: "grid",
+              gridTemplateColumns: "repeat(2, 1fr)",
+              gap: "2rem",
+              maxWidth: 1000,
+              width: "100%",
+              padding: "0 2rem",
+            }}
+          >
+            {[
+              {
+                title: "Local Connections",
+                description: "Discover neighbors with skills and services you need, right in your community.",
+              },
+              {
+                title: "Mutual Exchange",
+                description: "Share what you have, get what you need – create sustainable local economies.",
+              },
+              {
+                title: "Community Events",
+                description: "Participate in local gatherings, workshops, and collaborative activities that bring people together.",
+              },
+              {
+                title: "Growth Together",
+                description: "Build relationships, learn new skills, and contribute to a thriving community ecosystem.",
+              },
+            ].map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.8, delay: index * 0.1 }}
+                style={{
+                  background: "rgba(245, 241, 231, 0.95)",
+                  backdropFilter: "blur(20px)",
+                  border: "1px solid rgba(245, 241, 231, 0.3)",
+                  borderRadius: 16,
+                  padding: "2rem",
+                  textAlign: "center",
+                  boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
+                }}
+              >
+                <h3
+                  style={{
+                    fontSize: "1.3rem",
+                    fontWeight: 700,
+                    color: "#004d40",
+                    marginBottom: "1rem",
+                    fontFamily: "'Inter', sans-serif",
+                    letterSpacing: "0.05em",
+                  }}
+                >
+                  {feature.title}
+                </h3>
+                <p
+                  style={{
+                    fontSize: "1rem",
+                    lineHeight: 1.5,
+                    color: "#231a13",
+                    opacity: 0.9,
+                    fontFamily: "'Inter', sans-serif",
+                  }}
+                >
+                  {feature.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* Join Section */}
+        <section
+          style={{
+            position: "relative",
+            minHeight: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "4rem 1rem",
+          }}
+        >
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            style={{
+              maxWidth: 600,
+              textAlign: "center",
+              background: "rgba(255, 255, 255, 0.95)",
+              backdropFilter: "blur(20px)",
+              borderRadius: 20,
+              padding: "3rem",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.1)",
+              border: "1px solid rgba(0,0,0,0.1)",
+              fontFamily: "'Inter', sans-serif",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "2.5rem",
+                fontWeight: 800,
+                color: "#004d40",
+                marginBottom: "2rem",
+                letterSpacing: "0.1em",
+              }}
+            >
+              Join Your Community Today
+            </h2>
+            <p
+              style={{
+                fontSize: "1.3rem",
+                color: "#231a13",
+                marginBottom: "3rem",
+                lineHeight: 1.6,
+              }}
+            >
+              Ready to connect, share, and grow with your neighbors? Create your profile and start building relationships that matter.
+            </p>
+            <button
+              onClick={() => onLoginSuccess({ username: "guest" })}
+              style={{
+                backgroundColor: "#004d40",
+                color: "#FFFFFF",
+                border: "none",
+                borderRadius: 16,
+                padding: "1.2rem 3rem",
+                fontSize: "1.2rem",
+                fontWeight: 600,
+                cursor: "pointer",
+                fontFamily: "'Inter', sans-serif",
+              }}
+            >
+              Get Started
+            </button>
+          </motion.div>
+        </section>
+
+        {/* Footer - Solid background covering map */}
+        <footer
+          style={{
+            position: "relative",
+            backgroundColor: "#231a13",
+            color: "#F5F1E7",
+            padding: "2rem 1rem 1rem",
+            textAlign: "center",
+            fontFamily: "'Inter', sans-serif",
+            zIndex: 10, // Above the map
+          }}
+        >
+          {/* Additional solid overlay to ensure no map shows through */}
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "#231a13",
+              zIndex: -1,
+            }}
+          />
+
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              maxWidth: 1000,
+              margin: "0 auto",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+              gap: "2rem",
+              marginBottom: "2rem",
+            }}
+          >
+            <div>
+              <h3
+                style={{
+                  color: "#004d40",
+                  marginBottom: "1rem",
+                  fontSize: "1.5rem",
+                  fontWeight: 700,
+                }}
+              >
+                Paros
+              </h3>
+              <p style={{ opacity: 0.8 }}>
+                Bringing communities closer through meaningful connections.
+              </p>
+            </div>
+
+            <div>
+              <h4 style={{ marginBottom: "1rem", fontWeight: 600 }}>Community</h4>
+              <ul style={{ listStyle: "none", padding: 0, opacity: 0.8 }}>
+                <li style={{ marginBottom: "0.5rem" }}>Local Services</li>
+                <li style={{ marginBottom: "0.5rem" }}>Skill Sharing</li>
+                <li style={{ marginBottom: "0.5rem" }}>Events</li>
+                <li style={{ marginBottom: "0.5rem" }}>Goods Exchange</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 style={{ marginBottom: "1rem", fontWeight: 600 }}>Connect</h4>
+              <ul style={{ listStyle: "none", padding: 0, opacity: 0.8 }}>
+                <li style={{ marginBottom: "0.5rem" }}>Join Community</li>
+                <li style={{ marginBottom: "0.5rem" }}>Find Neighbors</li>
+                <li style={{ marginBottom: "0.5rem" }}>Share Skills</li>
+                <li style={{ marginBottom: "0.5rem" }}>Organize Events</li>
+              </ul>
+            </div>
+          </div>
+
+          <div
+            style={{
+              position: "relative",
+              zIndex: 1,
+              borderTop: "1px solid rgba(245, 241, 231, 0.1)",
+              paddingTop: "2rem",
+              opacity: 0.6,
+            }}
+          >
+            <p>© 2025 Paros. Building stronger communities together.</p>
+          </div>
+        </footer>
+      </div>
+    </>
   );
 }
