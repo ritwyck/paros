@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function LoginSignup({ onLogin, isDarkMode }) {
   const [isLoginMode, setIsLoginMode] = useState(true); // true = login, false = signup
@@ -6,6 +6,18 @@ function LoginSignup({ onLogin, isDarkMode }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check for mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -20,9 +32,9 @@ function LoginSignup({ onLogin, isDarkMode }) {
     <div
       onClick={(e) => e.stopPropagation()}
       style={{
-        maxWidth: 520,
+        width: isMobile ? "min(85vw, 280px)" : "520px",
         margin: "0 auto",
-        padding: "2.5rem 3rem",
+        padding: isMobile ? "1.5rem 1.5rem" : "2.5rem 3rem",
         background: isDarkMode ? "rgba(0, 0, 0, 0.98)" : "rgba(251, 248, 241, 0.98)",
         borderRadius: 0, // Sharp corners for gallery aesthetic
         boxShadow: isDarkMode
@@ -62,12 +74,12 @@ function LoginSignup({ onLogin, isDarkMode }) {
       }} />
 
       {/* Login/Signup Toggle */}
-      <div style={{ display: "flex", marginBottom: "2rem" }}>
+      <div style={{ display: "flex", marginBottom: isMobile ? "1.5rem" : "2rem" }}>
         <button
           onClick={(e) => { e.stopPropagation(); setIsLoginMode(true); }}
           style={{
             flex: 1,
-            padding: "0.8rem 0",
+            padding: isMobile ? "0.6rem 0" : "0.8rem 0",
             background: isLoginMode ? (isDarkMode ? "#E8DCC0" : "#231a13") : "transparent",
             color: isLoginMode ? (isDarkMode ? "#231a13" : "#E8DCC0") : (isDarkMode ? "#E8DCC0" : "#231a13"),
             border: `1px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
@@ -75,7 +87,7 @@ function LoginSignup({ onLogin, isDarkMode }) {
             borderRadius: 0,
             cursor: "pointer",
             fontWeight: isLoginMode ? 600 : 400,
-            fontSize: "1rem",
+            fontSize: isMobile ? "0.9rem" : "1rem",
             fontFamily: "'Inter', sans-serif",
             transition: "all 0.3s ease",
           }}
@@ -86,7 +98,7 @@ function LoginSignup({ onLogin, isDarkMode }) {
           onClick={(e) => { e.stopPropagation(); setIsLoginMode(false); }}
           style={{
             flex: 1,
-            padding: "0.8rem 0",
+            padding: isMobile ? "0.6rem 0" : "0.8rem 0",
             background: !isLoginMode ? (isDarkMode ? "#E8DCC0" : "#231a13") : "transparent",
             color: !isLoginMode ? (isDarkMode ? "#231a13" : "#E8DCC0") : (isDarkMode ? "#E8DCC0" : "#231a13"),
             border: `1px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
@@ -94,7 +106,7 @@ function LoginSignup({ onLogin, isDarkMode }) {
             borderRadius: 0,
             cursor: "pointer",
             fontWeight: !isLoginMode ? 600 : 400,
-            fontSize: "1rem",
+            fontSize: isMobile ? "0.9rem" : "1rem",
             fontFamily: "'Inter', sans-serif",
             transition: "all 0.3s ease",
           }}
@@ -104,11 +116,11 @@ function LoginSignup({ onLogin, isDarkMode }) {
       </div>
 
       {/* Artistic Form Title */}
-      <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+      <div style={{ textAlign: "center", marginBottom: isMobile ? "1.5rem" : "2rem" }}>
         <h1 style={{
-          fontSize: "2.5rem",
+          fontSize: isMobile ? "1.8rem" : "2.5rem",
           fontWeight: 300,
-          letterSpacing: "0.15em",
+          letterSpacing: isMobile ? "0.1em" : "0.15em",
           margin: 0,
           color: isDarkMode ? "#E8DCC0" : "#231a13",
           textTransform: "uppercase",
@@ -117,7 +129,7 @@ function LoginSignup({ onLogin, isDarkMode }) {
           {isLoginMode ? "Welcome Back" : "Join Paros"}
         </h1>
         <p style={{
-          fontSize: "0.95rem",
+          fontSize: isMobile ? "0.85rem" : "0.95rem",
           marginTop: "0.5rem",
           opacity: 0.8,
           fontWeight: 400,
@@ -131,11 +143,11 @@ function LoginSignup({ onLogin, isDarkMode }) {
       <form onSubmit={handleSubmit} style={{ position: "relative", zIndex: 2 }}>
 
         {/* Username Field */}
-        <div style={{ marginBottom: "1.4rem" }}>
+        <div style={{ marginBottom: isMobile ? "1.2rem" : "1.4rem" }}>
           <label style={{
             display: "block",
             marginBottom: "0.6rem",
-            fontSize: "1rem",
+            fontSize: isMobile ? "0.95rem" : "1rem",
             fontWeight: 500,
             letterSpacing: "0.05em",
             color: isDarkMode ? "#E8DCC0" : "#231a13",
@@ -150,8 +162,8 @@ function LoginSignup({ onLogin, isDarkMode }) {
             placeholder=""
             style={{
               width: "100%",
-              padding: "0.9rem 1.2rem",
-              fontSize: "1rem",
+              padding: isMobile ? "0.8rem 1rem" : "0.9rem 1.2rem",
+              fontSize: isMobile ? "0.95rem" : "1rem",
               borderRadius: 0,
               border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
               background: isDarkMode ? "rgba(0, 0, 0, 0.6)" : "rgba(251, 248, 241, 0.6)",
@@ -165,11 +177,11 @@ function LoginSignup({ onLogin, isDarkMode }) {
 
         {/* Email Field (only for signup) */}
         {!isLoginMode && (
-          <div style={{ marginBottom: "1.4rem" }}>
+          <div style={{ marginBottom: isMobile ? "1.2rem" : "1.4rem" }}>
             <label style={{
               display: "block",
               marginBottom: "0.6rem",
-              fontSize: "1rem",
+              fontSize: isMobile ? "0.95rem" : "1rem",
               fontWeight: 500,
               letterSpacing: "0.05em",
               color: isDarkMode ? "#E8DCC0" : "#231a13",
@@ -184,8 +196,8 @@ function LoginSignup({ onLogin, isDarkMode }) {
               placeholder=""
               style={{
                 width: "100%",
-                padding: "0.9rem 1.2rem",
-                fontSize: "1rem",
+                padding: isMobile ? "0.8rem 1rem" : "0.9rem 1.2rem",
+                fontSize: isMobile ? "0.95rem" : "1rem",
                 borderRadius: 0,
                 border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
                 background: isDarkMode ? "rgba(0, 0, 0, 0.6)" : "rgba(251, 248, 241, 0.6)",
@@ -199,11 +211,11 @@ function LoginSignup({ onLogin, isDarkMode }) {
         )}
 
         {/* Password Field */}
-        <div style={{ marginBottom: "2rem" }}>
+        <div style={{ marginBottom: isMobile ? "1.5rem" : "2rem" }}>
           <label style={{
             display: "block",
             marginBottom: "0.6rem",
-            fontSize: "1rem",
+            fontSize: isMobile ? "0.95rem" : "1rem",
             fontWeight: 500,
             letterSpacing: "0.05em",
             color: isDarkMode ? "#E8DCC0" : "#231a13",
@@ -218,8 +230,8 @@ function LoginSignup({ onLogin, isDarkMode }) {
             placeholder=""
             style={{
               width: "100%",
-              padding: "0.9rem 1.2rem",
-              fontSize: "1rem",
+              padding: isMobile ? "0.8rem 1rem" : "0.9rem 1.2rem",
+              fontSize: isMobile ? "0.95rem" : "1rem",
               borderRadius: 0,
               border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
               background: isDarkMode ? "rgba(0, 0, 0, 0.6)" : "rgba(251, 248, 241, 0.6)",
@@ -254,35 +266,38 @@ function LoginSignup({ onLogin, isDarkMode }) {
         )}
 
         {/* Submit Button */}
-        <button
-          type="submit"
-          style={{
-            width: "100%",
-            padding: "1rem 0",
-            backgroundColor: isDarkMode ? "#E8DCC0" : "#231a13",
-            border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
-            borderRadius: 0,
-            fontWeight: 600,
-            fontSize: "1.1rem",
-            color: isDarkMode ? "#231a13" : "#E8DCC0",
-            cursor: "pointer",
-            boxShadow: isDarkMode
-              ? "0 6px 20px rgba(0,77,64,0.4)"
-              : "0 6px 20px rgba(232,220,192,0.3)",
-            transition: "all 0.3s ease",
-            fontFamily: "'Inter', sans-serif",
-            textTransform: "uppercase",
-            letterSpacing: "0.05em",
-          }}
-        >
-          {isLoginMode ? "Login" : "Create Account"}
-        </button>
+        <div style={{ marginBottom: isMobile ? "1.2rem" : "1.4rem" }}>
+          <button
+            type="submit"
+            style={{
+              width: "100%",
+              padding: isMobile ? "0.8rem 1rem" : "0.9rem 1.2rem",
+              background: isDarkMode ? "rgba(0, 0, 0, 0.6)" : "rgba(251, 248, 241, 0.6)",
+              border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
+              borderRadius: 0,
+              fontWeight: 600,
+              fontSize: isMobile ? "0.95rem" : "1rem",
+              color: isDarkMode ? "#E8DCC0" : "#231a13",
+              cursor: "pointer",
+              transition: "all 0.3s ease",
+              fontFamily: "'Inter', sans-serif",
+              textTransform: "uppercase",
+              letterSpacing: "0.05em",
+              textAlign: "center",
+              boxSizing: "border-box",
+              display: "block",
+              marginLeft: "-2px",
+            }}
+          >
+            {isLoginMode ? "Login" : "Create Account"}
+          </button>
+        </div>
 
         {/* Demo Info */}
         {isLoginMode && (
           <div style={{
-            marginTop: "1.5rem",
-            padding: "0.7rem",
+            marginTop: isMobile ? "1.2rem" : "1.5rem",
+            padding: isMobile ? "0.6rem" : "0.7rem",
             background: isDarkMode ? "rgba(232, 220, 192, 0.1)" : "rgba(0, 0, 0, 0.1)",
             border: `1px solid ${isDarkMode ? "rgba(232, 220, 192, 0.3)" : "rgba(0, 0, 0, 0.3)"}`,
             borderRadius: 0,
@@ -291,7 +306,7 @@ function LoginSignup({ onLogin, isDarkMode }) {
             <small style={{
               color: isDarkMode ? "#E8DCC0" : "#231a13",
               opacity: 0.7,
-              fontSize: "0.8rem",
+              fontSize: isMobile ? "0.75rem" : "0.8rem",
               letterSpacing: "0.05em"
             }}>
               Demo: username "demo" - password "demo123"

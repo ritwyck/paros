@@ -208,7 +208,7 @@ const FloatingLoginButton = ({ onModalOpen, isDarkMode, style }) => {
   );
 };
 
-const JoinSection = ({ isDarkMode, onOpenModal }) => {
+const JoinSection = ({ isDarkMode, onOpenModal, isMobile }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
@@ -221,7 +221,7 @@ const JoinSection = ({ isDarkMode, onOpenModal }) => {
         background: isDarkMode ? "rgba(0, 0, 0, 0.95)" : "rgba(251, 248, 241, 0.95)",
         backdropFilter: "blur(20px)",
         borderRadius: 20,
-        padding: "3rem",
+        padding: isMobile ? "2rem" : "3rem",
         boxShadow: "0 20px 60px rgba(0,0,0,0.1)",
         border: "1px solid rgba(249, 245, 237, 0.3)",
         fontFamily: "'Inter', sans-serif",
@@ -231,7 +231,7 @@ const JoinSection = ({ isDarkMode, onOpenModal }) => {
     >
       <h2
         style={{
-          fontSize: "2.5rem",
+          fontSize: isMobile ? "1.8rem" : "2.5rem",
           fontWeight: 800,
           color: isDarkMode ? "#E8DCC0" : "#231a13",
           marginBottom: "2rem",
@@ -242,7 +242,7 @@ const JoinSection = ({ isDarkMode, onOpenModal }) => {
       </h2>
       <p
         style={{
-          fontSize: "1.3rem",
+          fontSize: isMobile ? "1rem" : "1.3rem",
           color: isDarkMode ? "#E8DCC0" : "#231a13",
           marginBottom: "3rem",
           lineHeight: 1.6,
@@ -263,8 +263,8 @@ const JoinSection = ({ isDarkMode, onOpenModal }) => {
           color: isDarkMode ? "#231a13" : "#E8DCC0",
           border: "none",
           borderRadius: 0, // Sharp corners
-          padding: "1.2rem 3rem",
-          fontSize: "1.2rem",
+          padding: isMobile ? "1rem 2rem" : "1.2rem 3rem",
+          fontSize: isMobile ? "1rem" : "1.2rem",
           fontWeight: 600,
           cursor: "pointer",
           fontFamily: "'Inter', sans-serif",
@@ -284,6 +284,18 @@ export default function LandingPage({ onLoginSuccess }) {
 
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check for mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Mock user storage (would use localStorage in real implementation)
   const mockUsers = [
@@ -358,9 +370,9 @@ export default function LandingPage({ onLoginSuccess }) {
                 transition: { duration: 0.3 }
               }}
               style={{
-                fontSize: "6rem",
+                fontSize: isMobile ? "3rem" : "6rem",
                 fontWeight: 900,
-                letterSpacing: "0.2em",
+                letterSpacing: isMobile ? "0.1em" : "0.2em",
                 margin: 0,
                 userSelect: "none",
                 fontFamily: "'Inter', sans-serif",
@@ -422,14 +434,14 @@ export default function LandingPage({ onLoginSuccess }) {
               background: isDarkMode ? "rgba(0, 0, 0, 0.95)" : "rgba(251, 248, 241, 0.95)",
               backdropFilter: "blur(20px)",
               borderRadius: 20,
-              padding: "3rem",
+              padding: isMobile ? "2rem" : "3rem",
               boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
               border: `1px solid ${isDarkMode ? "rgba(129, 115, 105, 0.3)" : "rgba(249, 245, 237, 0.3)"}`,
             }}
           >
             <h2
               style={{
-                fontSize: "3.5rem",
+                fontSize: isMobile ? "2.5rem" : "3.5rem",
                 fontWeight: 800,
                 marginBottom: "2rem",
                 letterSpacing: "0.1em",
@@ -440,7 +452,7 @@ export default function LandingPage({ onLoginSuccess }) {
             </h2>
             <p
               style={{
-                fontSize: "1.4rem",
+                fontSize: isMobile ? "1.1rem" : "1.4rem",
                 lineHeight: 1.6,
                 marginBottom: "2rem",
                 color: isDarkMode ? "#E8DCC0" : "#231a13",
@@ -491,11 +503,11 @@ export default function LandingPage({ onLoginSuccess }) {
               position: "relative",
               zIndex: 10,
               display: "grid",
-              gridTemplateColumns: "repeat(2, 1fr)",
-              gap: "2rem",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)",
+              gap: isMobile ? "1.5rem" : "2rem",
               maxWidth: 1000,
               width: "100%",
-              padding: "0 2rem",
+              padding: isMobile ? "0 1rem" : "0 2rem",
             }}
           >
             {[
@@ -567,10 +579,10 @@ export default function LandingPage({ onLoginSuccess }) {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            padding: "4rem 1rem",
+            padding: isMobile ? "6rem 1rem" : "4rem 1rem",
           }}
         >
-          <JoinSection isDarkMode={isDarkMode} onOpenModal={openModal} />
+          <JoinSection isDarkMode={isDarkMode} onOpenModal={openModal} isMobile={isMobile} />
         </section>
 
         {/* Auth Modal Overlay */}
