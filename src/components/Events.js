@@ -1,9 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 
 const Events = ({ events, isDarkMode, onCreateEvent }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [filters, setFilters] = useState({
+    date: '',
+    category: '',
+    location: '',
+    search: ''
+  });
+  const [showFilters, setShowFilters] = useState(false);
 
   React.useEffect(() => {
     const checkMobile = () => {
@@ -14,6 +21,64 @@ const Events = ({ events, isDarkMode, onCreateEvent }) => {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Filter events based on current filters
+  const filteredEvents = useMemo(() => {
+    return events.filter(event => {
+      // Search filter (title and description)
+      if (filters.search) {
+        const searchTerm = filters.search.toLowerCase();
+        const matchesSearch = event.title.toLowerCase().includes(searchTerm) ||
+                             event.description.toLowerCase().includes(searchTerm) ||
+                             event.curator.toLowerCase().includes(searchTerm);
+        if (!matchesSearch) return false;
+      }
+
+      // Date filter
+      if (filters.date) {
+        if (event.date !== filters.date) return false;
+      }
+
+      // Category filter
+      if (filters.category) {
+        if (event.category !== filters.category) return false;
+      }
+
+      // Location filter
+      if (filters.location) {
+        const locationTerm = filters.location.toLowerCase();
+        if (!event.location.toLowerCase().includes(locationTerm)) return false;
+      }
+
+      return true;
+    });
+  }, [events, filters]);
+
+  // Get unique categories and locations for filter options
+  const categories = useMemo(() => {
+    const uniqueCategories = [...new Set(events.map(event => event.category))];
+    return uniqueCategories.sort();
+  }, [events]);
+
+  const locations = useMemo(() => {
+    const uniqueLocations = [...new Set(events.map(event => event.location))];
+    return uniqueLocations.sort();
+  }, [events]);
+
+  const updateFilter = (key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      date: '',
+      category: '',
+      location: '',
+      search: ''
+    });
+  };
+
+  const hasActiveFilters = Object.values(filters).some(value => value !== '');
 
   return (
     <div style={{
@@ -77,6 +142,267 @@ const Events = ({ events, isDarkMode, onCreateEvent }) => {
         </motion.button>
       </motion.div>
 
+      {/* Filter Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        style={{
+          maxWidth: "1400px",
+          margin: "0 auto 3rem",
+          background: "white",
+          borderRadius: isMobile ? "16px" : "20px",
+          padding: isMobile ? "2rem 1.5rem" : "3rem",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
+          border: "1px solid rgba(249, 245, 237, 0.6)"
+        }}
+      >
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: "2rem"
+        }}>
+          <h2 style={{
+            fontSize: isMobile ? "1.4rem" : "1.6rem",
+            fontWeight: 600,
+            color: "#231a13",
+            margin: 0,
+            fontFamily: "'Inter', sans-serif"
+          }}>
+            Filter Events
+          </h2>
+          <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
+            {hasActiveFilters && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={clearFilters}
+                style={{
+                  background: "transparent",
+                  color: "#666",
+                  border: "2px solid #E8DCC0",
+                  borderRadius: "8px",
+                  padding: "0.5rem 1rem",
+                  fontSize: "0.9rem",
+                  fontWeight: 500,
+                  cursor: "pointer",
+                  fontFamily: "'Inter', sans-serif"
+                }}
+              >
+                Clear Filters
+              </motion.button>
+            )}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowFilters(!showFilters)}
+              style={{
+                background: hasActiveFilters ? "#8B7355" : "transparent",
+                color: hasActiveFilters ? "white" : "#666",
+                border: hasActiveFilters ? "none" : "2px solid #E8DCC0",
+                borderRadius: "8px",
+                padding: "0.5rem 1rem",
+                fontSize: "0.9rem",
+                fontWeight: 500,
+                cursor: "pointer",
+                fontFamily: "'Inter', sans-serif",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem"
+              }}
+            >
+
+              {isMobile ? "Filters" : "Show Filters"}
+              {hasActiveFilters && (
+                <span style={{
+                  background: hasActiveFilters ? "rgba(255,255,255,0.3)" : "#8B7355",
+                  color: hasActiveFilters ? "white" : "#231a13",
+                  borderRadius: "50%",
+                  width: "20px",
+                  height: "20px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "0.7rem",
+                  fontWeight: "bold"
+                }}>
+                  {Object.values(filters).filter(v => v !== '').length}
+                </span>
+              )}
+            </motion.button>
+          </div>
+        </div>
+
+        {showFilters && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(250px, 1fr))",
+              gap: "1.5rem",
+              overflow: "hidden"
+            }}
+          >
+            {/* Search Filter */}
+            <div>
+              <label style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: 600,
+                color: "#231a13",
+                fontSize: "0.9rem",
+                fontFamily: "'Inter', sans-serif"
+              }}>
+                Search Events
+              </label>
+              <input
+                type="text"
+                value={filters.search}
+                onChange={(e) => updateFilter('search', e.target.value)}
+                placeholder="Search by title, description, or organizer..."
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "2px solid #E8DCC0",
+                  borderRadius: "8px",
+                  fontSize: "1rem",
+                  outline: "none",
+                  fontFamily: "'Inter', sans-serif"
+                }}
+              />
+            </div>
+
+            {/* Date Filter */}
+            <div>
+              <label style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: 600,
+                color: "#231a13",
+                fontSize: "0.9rem",
+                fontFamily: "'Inter', sans-serif"
+              }}>
+                Event Date
+              </label>
+              <input
+                type="date"
+                value={filters.date}
+                onChange={(e) => updateFilter('date', e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "2px solid #E8DCC0",
+                  borderRadius: "8px",
+                  fontSize: "1rem",
+                  outline: "none",
+                  fontFamily: "'Inter', sans-serif"
+                }}
+              />
+            </div>
+
+            {/* Category Filter */}
+            <div>
+              <label style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: 600,
+                color: "#231a13",
+                fontSize: "0.9rem",
+                fontFamily: "'Inter', sans-serif"
+              }}>
+                Category
+              </label>
+              <select
+                value={filters.category}
+                onChange={(e) => updateFilter('category', e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "2px solid #E8DCC0",
+                  borderRadius: "8px",
+                  fontSize: "1rem",
+                  outline: "none",
+                  fontFamily: "'Inter', sans-serif",
+                  background: "white"
+                }}
+              >
+                <option value="">All Categories</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>
+                    {category.charAt(0).toUpperCase() + category.slice(1)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Location Filter */}
+            <div>
+              <label style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontWeight: 600,
+                color: "#231a13",
+                fontSize: "0.9rem",
+                fontFamily: "'Inter', sans-serif"
+              }}>
+                Location
+              </label>
+              <select
+                value={filters.location}
+                onChange={(e) => updateFilter('location', e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "2px solid #E8DCC0",
+                  borderRadius: "8px",
+                  fontSize: "1rem",
+                  outline: "none",
+                  fontFamily: "'Inter', sans-serif",
+                  background: "white"
+                }}
+              >
+                <option value="">All Locations</option>
+                {locations.map(location => (
+                  <option key={location} value={location}>{location}</option>
+                ))}
+              </select>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Results Summary */}
+        <div style={{
+          marginTop: "1.5rem",
+          paddingTop: "1.5rem",
+          borderTop: "1px solid rgba(232,220,192,0.2)",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center"
+        }}>
+          <span style={{
+            color: "#666",
+            fontSize: "0.9rem",
+            fontFamily: "'Inter', sans-serif"
+          }}>
+            Showing {filteredEvents.length} of {events.length} events
+          </span>
+          {hasActiveFilters && (
+            <span style={{
+              color: "#8B7355",
+              fontSize: "0.9rem",
+              fontWeight: 600,
+              fontFamily: "'Inter', sans-serif"
+            }}>
+              Filters applied
+            </span>
+          )}
+        </div>
+      </motion.div>
+
       {/* Events Grid */}
       <div style={{
         maxWidth: "1400px",
@@ -85,7 +411,67 @@ const Events = ({ events, isDarkMode, onCreateEvent }) => {
         gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(350px, 1fr))",
         gap: isMobile ? "2rem" : "3rem"
       }}>
-        {events.map((event, index) => (
+        {filteredEvents.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{
+              gridColumn: "1 / -1",
+              textAlign: "center",
+              padding: "4rem 2rem",
+              background: "white",
+              borderRadius: isMobile ? "16px" : "20px",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
+              border: "1px solid rgba(249, 245, 237, 0.6)"
+            }}
+          >
+            <div style={{
+              width: "80px",
+              height: "80px",
+              borderRadius: "50%",
+              background: "linear-gradient(135deg, #E8DCC0 0%, #D4C4A8 100%)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0 auto 1.5rem",
+              fontSize: "2rem",
+              color: "#E8DCC0"
+            }}>
+              SEARCH
+            </div>
+            <h3 style={{ margin: "0 0 1rem 0", color: "#231a13" }}>
+              {hasActiveFilters ? "No events match your filters" : "No events available"}
+            </h3>
+            <p style={{ margin: 0, color: "#666", fontSize: "1rem" }}>
+              {hasActiveFilters
+                ? "Try adjusting your search criteria or clearing some filters."
+                : "Check back later for upcoming community events."
+              }
+            </p>
+            {hasActiveFilters && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={clearFilters}
+                style={{
+                  marginTop: "1.5rem",
+                  background: "#8B7355",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  padding: "0.75rem 1.5rem",
+                  fontSize: "1rem",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  fontFamily: "'Inter', sans-serif"
+                }}
+              >
+                Clear All Filters
+              </motion.button>
+            )}
+          </motion.div>
+        ) : (
+          filteredEvents.map((event, index) => (
           <motion.div
             key={event.id}
             initial={{ opacity: 0, y: 30 }}
@@ -139,7 +525,7 @@ const Events = ({ events, isDarkMode, onCreateEvent }) => {
                 boxShadow: "0 4px 16px rgba(139, 115, 85, 0.3)",
                 border: "2px solid rgba(255,255,255,0.8)"
               }}>
-                📅
+                CALENDAR
               </div>
               <div style={{ flex: 1 }}>
                 <h3 style={{
@@ -255,7 +641,8 @@ const Events = ({ events, isDarkMode, onCreateEvent }) => {
               </div>
             </div>
           </motion.div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Event Detail Modal */}
@@ -327,7 +714,7 @@ const Events = ({ events, isDarkMode, onCreateEvent }) => {
                 justifyContent: "center",
                 fontSize: "2rem"
               }}>
-                📅
+                CALENDAR
               </div>
               <div>
                 <h2 style={{
@@ -387,7 +774,7 @@ const Events = ({ events, isDarkMode, onCreateEvent }) => {
                 margin: "0 0 0.5rem 0",
                 fontFamily: "'Inter', sans-serif"
               }}>
-                📍 {selectedEvent.location}
+                Location: {selectedEvent.location}
               </p>
               <p style={{
                 fontSize: "1rem",
@@ -395,7 +782,7 @@ const Events = ({ events, isDarkMode, onCreateEvent }) => {
                 margin: "0 0 0.5rem 0",
                 fontFamily: "'Inter', sans-serif"
               }}>
-                👥 Organized by {selectedEvent.curator}
+                Organized by {selectedEvent.curator}
               </p>
               <p style={{
                 fontSize: "1rem",
@@ -403,7 +790,7 @@ const Events = ({ events, isDarkMode, onCreateEvent }) => {
                 margin: 0,
                 fontFamily: "'Inter', sans-serif"
               }}>
-                🎯 Category: {selectedEvent.category}
+                Category: {selectedEvent.category}
               </p>
             </div>
 
