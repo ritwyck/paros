@@ -18,43 +18,73 @@ L.Icon.Default.mergeOptions({
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
 
-// **[GALLERY ARTISTIC UI SYSTEM]** Complete Suite
+// **[COMMUNITY HELP SYSTEM]** Complete Suite
 const dummyListings = [
   {
     id: 1,
-    title: "Garden Help",
+    title: "Garden Help Needed",
     category: "service",
-    description: "Help with gardening tasks in exchange for fresh produce from garden!",
-    location: "Local area A",
-    curator: "Maria G.",
-    lastActive: "2 hours ago"
+    type: "help",
+    description: "Need help with weeding and planting in my backyard garden. Happy to pay $20/hour or trade fresh vegetables!",
+    location: "Downtown",
+    helper: "Maria G.",
+    lastActive: "2 hours ago",
+    compensation: "$20/hr or barter"
   },
   {
     id: 2,
-    title: "Guitar Lessons",
+    title: "Guitar Lessons Available",
     category: "skill",
-    description: "Private acoustic and classical guitar lessons for beginners and intermediates.",
-    location: "Local area B",
-    curator: "Alex R.",
-    lastActive: "5 hours ago"
+    type: "teach",
+    description: "Experienced guitarist offering lessons for beginners. $25 per hour, flexible scheduling.",
+    location: "Westside",
+    helper: "Alex R.",
+    lastActive: "5 hours ago",
+    compensation: "$25/hour"
   },
   {
     id: 3,
-    title: "Lawn Mower",
-    category: "good",
-    description: "Well-maintained electric lawn mower available to borrow Saturdays only.",
-    location: "Local area A",
-    curator: "David K.",
-    lastActive: "1 day ago"
+    title: "Lawn Mower Available",
+    category: "lend",
+    type: "borrow",
+    description: "Electric lawn mower in great condition. Available to borrow for $10/day. Gas included.",
+    location: "Eastside",
+    helper: "David K.",
+    lastActive: "1 day ago",
+    compensation: "$10/day"
   },
   {
     id: 4,
-    title: "Spanish Conversation",
+    title: "Spanish Conversation Partner",
     category: "skill",
-    description: "Practice Spanish conversation skills with a native speaker over coffee.",
+    type: "practice",
+    description: "Looking for someone to practice Spanish conversation with. Native speaker available for free language exchange.",
     location: "Downtown",
-    curator: "Sara M.",
-    lastActive: "3 hours ago"
+    helper: "Sara M.",
+    lastActive: "3 hours ago",
+    compensation: "Free exchange"
+  },
+  {
+    id: 5,
+    title: "Moving Help",
+    category: "service",
+    type: "help",
+    description: "Need strong people to help move furniture this Saturday. Pizza and beer provided!",
+    location: "Northside",
+    helper: "Carlos L.",
+    lastActive: "6 hours ago",
+    compensation: "Pizza & beer"
+  },
+  {
+    id: 6,
+    title: "Bike Repair Service",
+    category: "skill",
+    type: "repair",
+    description: "Professional bike mechanic available for repairs and maintenance. $15/hour.",
+    location: "Southside",
+    helper: "Mike T.",
+    lastActive: "1 day ago",
+    compensation: "$15/hour"
   }
 ];
 
@@ -99,17 +129,24 @@ const dummyEvents = [
 ];
 
 // **[GALLERY ARTIST DESIGN SYSTEM]**
-const GlobalMapBackground = ({ isDarkMode }) => {
+const GlobalMapBackground = ({ isDarkMode, user }) => {
   const mapRef = React.useRef();
   const { scrollYProgress } = useScroll();
+
+  // Fixed coordinates for Pune, Maharashtra, India
+  const getUserCoordinates = () => {
+    return [18.5204, 73.8567]; // Pune coordinates
+  };
+
+  const [userLat, userLng] = getUserCoordinates();
 
   React.useEffect(() => {
     const unsubscribe = scrollYProgress.on("change", (progress) => {
       if (mapRef.current) {
-        const startLat = 18.58;
-        const endLat = 18.45;
+        const startLat = userLat;
+        const endLat = userLat - 0.13; // Similar range as original
         const lat = startLat + (endLat - startLat) * progress;
-        const lng = 73.8567;
+        const lng = userLng;
         try {
           mapRef.current.setView([lat, lng], 14, { animate: true, duration: 0.5 });
         } catch (error) {
@@ -118,7 +155,7 @@ const GlobalMapBackground = ({ isDarkMode }) => {
       }
     });
     return unsubscribe;
-  }, [scrollYProgress]);
+  }, [scrollYProgress, userLat, userLng]);
 
   return (
     <>
@@ -134,7 +171,7 @@ const GlobalMapBackground = ({ isDarkMode }) => {
       }}>
         <MapContainer
           ref={mapRef}
-          center={[18.58, 73.8567]}
+          center={[userLat, userLng]}
           zoom={14}
           scrollWheelZoom={false}
           style={{ height: "100vh", width: "100vw" }}
@@ -239,16 +276,16 @@ const Dashboard = ({ user, isDarkMode, onNavigate, listings, events }) => (
           </h3>
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", color: isDarkMode ? "#F5F1E7" : "#231a13" }}>
-              <span>Active Listings</span>
-              <strong>{listings.filter(l => l.curator === user.username || l.curator?.split('.')[0] === user.username?.charAt(0)).length}</strong>
+              <span>Help Offered</span>
+              <strong>{listings.filter(l => l.helper === user.username || l.helper?.split('.')[0] === user.username?.charAt(0)).length}</strong>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", color: isDarkMode ? "#F5F1E7" : "#231a13" }}>
-              <span>Upcoming Events</span>
-              <strong>{events.length}</strong>
+              <span>Help Received</span>
+              <strong>{Math.floor(Math.random() * 5) + 1}</strong>
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", color: isDarkMode ? "#F5F1E7" : "#231a13" }}>
-              <span>Community Impact</span>
-              <strong>"Rising Artist"</strong>
+              <span>Community Rating</span>
+              <strong>5.0</strong>
             </div>
           </div>
         </div>
@@ -261,12 +298,12 @@ const Dashboard = ({ user, isDarkMode, onNavigate, listings, events }) => (
           border: `1px solid ${isDarkMode ? "rgba(152, 109, 106, 0.3)" : "rgba(249, 245, 237, 0.5)"}`,
         }}>
           <h3 style={{ color: isDarkMode ? "#F5F1E7" : "#231a13", marginBottom: "1.5rem", fontSize: "1.5rem" }}>
-Neighborhood Tools
+            Community Actions
           </h3>
           <div style={{ display: "grid", gap: "0.8rem" }}>
             <motion.button
               whileHover={{ scale: 1.02 }}
-              onClick={() => onNavigate("profile")}
+              onClick={() => onNavigate("browse")}
               style={{
                 backgroundColor: isDarkMode ? "#004d40" : "#E8DCC0",
                 color: isDarkMode ? "#E8DCC0" : "#231a13",
@@ -278,11 +315,11 @@ Neighborhood Tools
                 fontFamily: "'Inter', sans-serif",
               }}
             >
-Edit Profile
+              Browse Help
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.02 }}
-              onClick={() => onNavigate("create")}
+              onClick={() => onNavigate("profile")}
               style={{
                 backgroundColor: isDarkMode ? "#E8DCC0" : "#231a13",
                 color: isDarkMode ? "#231a13" : "#E8DCC0",
@@ -294,7 +331,7 @@ Edit Profile
                 fontFamily: "'Inter', sans-serif",
               }}
             >
-Create New Post
+              Edit Profile
             </motion.button>
           </div>
         </div>
@@ -362,12 +399,21 @@ Create New Post
             }}>
               {listing.description.substring(0, 100)}...
             </p>
-            <small style={{
-              color: isDarkMode ? "#E8DCC0" : "#231a13",
-              opacity: 0.7
-            }}>
-              Curated by {listing.curator} • {listing.lastActive}
-            </small>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.5rem" }}>
+              <small style={{
+                color: isDarkMode ? "#E8DCC0" : "#231a13",
+                opacity: 0.7
+              }}>
+                By {listing.helper} • {listing.lastActive}
+              </small>
+              <span style={{
+                color: isDarkMode ? "#E8DCC0" : "#231a13",
+                fontWeight: 600,
+                fontSize: "0.9rem"
+              }}>
+                {listing.compensation}
+              </span>
+            </div>
           </motion.div>
         ))}
       </div>
@@ -387,7 +433,7 @@ Create New Post
           fontWeight: 600,
           letterSpacing: "0.05em"
         }}>
-          🎨 Community Performances
+          Community Events
         </h2>
         {events.slice(0, 3).map((event, index) => (
           <motion.div
@@ -433,6 +479,231 @@ Create New Post
   </div>
 );
 
+// **[SWIPEABLE COMMUNITY LISTINGS]** Tinder-like card interface
+const SwipeableListings = ({ listings, isDarkMode }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
+
+  const swipeConfidenceThreshold = 10000;
+  const swipePower = (offset, velocity) => {
+    return Math.abs(offset) * velocity;
+  };
+
+  const paginate = (newDirection) => {
+    setDirection(newDirection);
+    setCurrentIndex(prevIndex => {
+      if (newDirection === 1) {
+        // Swipe right - interested
+        return prevIndex + 1 >= listings.length ? 0 : prevIndex + 1;
+      } else {
+        // Swipe left - not interested
+        return prevIndex + 1 >= listings.length ? 0 : prevIndex + 1;
+      }
+    });
+  };
+
+  const currentListing = listings[currentIndex];
+
+  if (!currentListing) return null;
+
+  return (
+    <div style={{
+      position: "relative",
+      zIndex: 10,
+      padding: "4rem 1rem 6rem",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      minHeight: "80vh"
+    }}>
+      <h1 style={{
+        fontSize: "2.5rem",
+        fontWeight: 600,
+        textAlign: "center",
+        marginBottom: "2rem",
+        color: isDarkMode ? "#E8DCC0" : "#231a13",
+        textTransform: "uppercase",
+        letterSpacing: "0.1em"
+      }}>
+        Find Help in Your Community
+      </h1>
+
+      <div style={{
+        position: "relative",
+        width: "100%",
+        maxWidth: "400px",
+        height: "500px",
+        marginBottom: "2rem"
+      }}>
+        <motion.div
+          key={currentIndex}
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0.8, opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={1}
+          onDragEnd={(e, { offset, velocity }) => {
+            const swipe = swipePower(offset.x, velocity.x);
+
+            if (swipe < -swipeConfidenceThreshold) {
+              paginate(-1); // Swipe left - not interested
+            } else if (swipe > swipeConfidenceThreshold) {
+              paginate(1); // Swipe right - interested
+            }
+          }}
+          style={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            background: isDarkMode ? "rgba(35, 26, 19, 0.95)" : "rgba(251, 248, 241, 0.95)",
+            backdropFilter: "blur(20px)",
+            borderRadius: "20px",
+            padding: "2rem",
+            border: `2px solid ${isDarkMode ? "rgba(129, 115, 105, 0.4)" : "rgba(249, 245, 237, 0.4)"}`,
+            boxShadow: "0 20px 60px rgba(0,0,0,0.1)",
+            cursor: "grab"
+          }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98, cursor: "grabbing" }}
+        >
+          <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+            <div>
+              <div style={{
+                backgroundColor: isDarkMode ? "#E8DCC0" : "#231a13",
+                color: isDarkMode ? "#231a13" : "#E8DCC0",
+                padding: "0.5rem 1rem",
+                borderRadius: "20px",
+                display: "inline-block",
+                fontSize: "0.8rem",
+                fontWeight: 600,
+                marginBottom: "1rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.05em"
+              }}>
+                {currentListing.category}
+              </div>
+
+              <h2 style={{
+                fontSize: "1.8rem",
+                fontWeight: 700,
+                marginBottom: "1rem",
+                color: isDarkMode ? "#F5F1E7" : "#231a13",
+                lineHeight: 1.2
+              }}>
+                {currentListing.title}
+              </h2>
+
+              <p style={{
+                fontSize: "1rem",
+                lineHeight: 1.6,
+                marginBottom: "1.5rem",
+                color: isDarkMode ? "#E8DCC0" : "#231a13",
+                opacity: 0.9
+              }}>
+                {currentListing.description}
+              </p>
+            </div>
+
+            <div>
+              <div style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: "1rem"
+              }}>
+                <div style={{
+                  color: isDarkMode ? "#E8DCC0" : "#231a13",
+                  opacity: 0.7,
+                  fontSize: "0.9rem"
+                }}>
+                  {currentListing.location}
+                </div>
+                <div style={{
+                  color: isDarkMode ? "#E8DCC0" : "#231a13",
+                  fontWeight: 600,
+                  fontSize: "1.1rem"
+                }}>
+                  {currentListing.compensation}
+                </div>
+              </div>
+
+              <div style={{
+                color: isDarkMode ? "#E8DCC0" : "#231a13",
+                opacity: 0.6,
+                fontSize: "0.8rem",
+                textAlign: "center"
+              }}>
+                By {currentListing.helper} • {currentListing.lastActive}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      <div style={{
+        display: "flex",
+        gap: "2rem",
+        marginBottom: "2rem"
+      }}>
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => paginate(-1)}
+          style={{
+            width: "60px",
+            height: "60px",
+            borderRadius: "50%",
+            border: "none",
+            backgroundColor: "#ff4757",
+            color: "white",
+            fontSize: "1.5rem",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 4px 16px rgba(255, 71, 87, 0.3)"
+          }}
+        >
+          ✕
+        </motion.button>
+
+        <motion.button
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          onClick={() => paginate(1)}
+          style={{
+            width: "60px",
+            height: "60px",
+            borderRadius: "50%",
+            border: "none",
+            backgroundColor: "#2ed573",
+            color: "white",
+            fontSize: "1.5rem",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 4px 16px rgba(46, 213, 115, 0.3)"
+          }}
+        >
+          ♥
+        </motion.button>
+      </div>
+
+      <div style={{
+        textAlign: "center",
+        color: isDarkMode ? "#E8DCC0" : "#231a13",
+        opacity: 0.7,
+        fontSize: "0.9rem"
+      }}>
+        Swipe left to skip • Swipe right to connect • Or use buttons below
+      </div>
+    </div>
+  );
+};
+
 // **[ART GALLERY ACCESSIBLE NAVIGATION]**
 const ArtisticNavigation = ({ currentPage, onNavigate, onLogout, isDarkMode }) => (
   <motion.nav
@@ -471,10 +742,10 @@ const ArtisticNavigation = ({ currentPage, onNavigate, onLogout, isDarkMode }) =
 
       <div style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
         {[
-          { key: "dashboard", label: "Neighborhood Hub", icon: ">" },
-          { key: "browse", label: "Community Exchange", icon: ">" },
-          { key: "events", label: "Local Gatherings", icon: ">" },
-          { key: "profile", label: "My Profile", icon: ">" },
+          { key: "dashboard", label: "Neighborhood Hub" },
+          { key: "browse", label: "Community Exchange" },
+          { key: "events", label: "Local Gatherings" },
+          { key: "profile", label: "My Profile" },
         ].map((item) => (
           <motion.button
             key={item.key}
@@ -483,7 +754,8 @@ const ArtisticNavigation = ({ currentPage, onNavigate, onLogout, isDarkMode }) =
             onClick={() => onNavigate(item.key)}
             style={{
               background: "none",
-              border: currentPage === item.key ? `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}` : "2px solid transparent",
+              border: "none",
+              borderBottom: currentPage === item.key ? `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}` : "2px solid transparent",
               color: isDarkMode ? "#E8DCC0" : "#231a13",
               padding: "0.8rem 1.5rem",
               borderRadius: 0,
@@ -492,12 +764,18 @@ const ArtisticNavigation = ({ currentPage, onNavigate, onLogout, isDarkMode }) =
               fontWeight: currentPage === item.key ? 700 : 500,
               fontFamily: "'Inter', sans-serif",
               transition: "all 0.3s ease",
-              boxShadow: currentPage === item.key ?
-                (isDarkMode ? "0 0 20px rgba(232, 220, 192, 0.4)" : "0 0 20px rgba(35, 26, 19, 0.3)") :
-                "none"
+              textDecoration: "none"
+            }}
+            onMouseEnter={(e) => {
+              if (currentPage !== item.key) {
+                e.target.style.textDecoration = "underline";
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.textDecoration = "none";
             }}
           >
-            {currentPage === item.key ? item.label : item.icon}
+            {item.label}
           </motion.button>
         ))}
 
@@ -518,7 +796,7 @@ const ArtisticNavigation = ({ currentPage, onNavigate, onLogout, isDarkMode }) =
             transition: "all 0.3s ease",
           }}
         >
-          🎯 Sign Out
+          Sign Out
         </motion.button>
       </div>
     </div>
@@ -543,7 +821,7 @@ function App() {
 
   function onLoginSuccess(userData) {
     setUser(userData);
-    setPage("dashboard"); // 🎯 Start at dashboard for profile emphasis
+    setPage("profile");
   }
 
   function handleLogout() {
@@ -559,7 +837,7 @@ function App() {
 
   return (
     <>
-      <GlobalMapBackground isDarkMode={isDarkMode} />
+      <GlobalMapBackground isDarkMode={isDarkMode} user={user} />
       <ThemeToggleButton isDarkMode={isDarkMode} onToggle={toggleTheme} />
       <ArtisticNavigation
         currentPage={page}
@@ -573,7 +851,7 @@ function App() {
           <Dashboard user={user} isDarkMode={isDarkMode} onNavigate={navigateTo} listings={dummyListings} events={dummyEvents} />
         )}
         {page === "profile" && <UserProfile user={user} setUser={setUser} />}
-        {page === "browse" && <Listings listings={dummyListings} isDarkMode={isDarkMode} />}
+        {page === "browse" && <SwipeableListings listings={dummyListings} isDarkMode={isDarkMode} />}
         {page === "events" && <Events events={dummyEvents} isDarkMode={isDarkMode} />}
         {page === "create" && (
           <div style={{ textAlign: "center", padding: "4rem" }}>
@@ -615,41 +893,41 @@ function App() {
         }}>
           <div>
             <h3 style={{ color: "#F5F1E7", marginBottom: "1rem", fontSize: "1.5rem", fontWeight: 700 }}>
-              🖼️ Paros Community
+              Paros Community
             </h3>
             <p style={{ color: "#F5F1E7", opacity: 0.9, lineHeight: 1.6 }}>
-              Building beautiful connections through shared creativity and community spirit.
+              Connecting neighbors through mutual help, skills, and shared resources.
             </p>
           </div>
 
           <div>
             <h4 style={{ color: "#F5F1E7", marginBottom: "1rem", fontWeight: 600, fontSize: "1.2rem" }}>
-              🎭 Creative Spaces
+              Help & Services
             </h4>
             <ul style={{ listStyle: "none", padding: 0 }}>
-              <li style={{ color: "#F5F1E7", marginBottom: "0.5rem", opacity: 0.9 }}>Local Art Exchanges</li>
-              <li style={{ color: "#F5F1E7", marginBottom: "0.5rem", opacity: 0.9 }}>Creative Workspaces</li>
-              <li style={{ color: "#F5F1E7", marginBottom: "0.5rem", opacity: 0.9 }}>Community Performances</li>
+              <li style={{ color: "#F5F1E7", marginBottom: "0.5rem", opacity: 0.9 }}>Skill Sharing</li>
+              <li style={{ color: "#F5F1E7", marginBottom: "0.5rem", opacity: 0.9 }}>Errand Running</li>
+              <li style={{ color: "#F5F1E7", marginBottom: "0.5rem", opacity: 0.9 }}>Home Repairs</li>
             </ul>
           </div>
 
           <div>
             <h4 style={{ color: "#F5F1E7", marginBottom: "1rem", fontWeight: 600, fontSize: "1.2rem" }}>
-              🌟 Connect & Create
+              Lend & Borrow
             </h4>
             <ul style={{ listStyle: "none", padding: 0 }}>
-              <li style={{ color: "#F5F1E7", marginBottom: "0.5rem", opacity: 0.9 }}>Curatorial Communities</li>
-              <li style={{ color: "#F5F1E7", marginBottom: "0.5rem", opacity: 0.9 }}>Art Collective Events</li>
-              <li style={{ color: "#F5F1E7", marginBottom: "0.5rem", opacity: 0.9 }}>Creative Collaborations</li>
+              <li style={{ color: "#F5F1E7", marginBottom: "0.5rem", opacity: 0.9 }}>Tools & Equipment</li>
+              <li style={{ color: "#F5F1E7", marginBottom: "0.5rem", opacity: 0.9 }}>Community Spaces</li>
+              <li style={{ color: "#F5F1E7", marginBottom: "0.5rem", opacity: 0.9 }}>Transportation</li>
             </ul>
           </div>
 
           <div>
             <h4 style={{ color: "#F5F1E7", marginBottom: "1rem", fontWeight: 600, fontSize: "1.2rem" }}>
-              🎨 Artistic Soul
+              Community Spirit
             </h4>
             <p style={{ color: "#F5F1E7", opacity: 0.9, fontSize: "0.9rem", lineHeight: 1.5 }}>
-              "Every connection is a masterpiece waiting to be created"
+              "Stronger together - helping neighbors, building community"
             </p>
           </div>
         </div>
@@ -661,7 +939,7 @@ function App() {
           paddingTop: "2rem",
         }}>
           <p style={{ color: "#F5F1E7", opacity: 0.8 }}>
-            © 2025 Paros. Curating community, one masterpiece at a time. 🖼️🎨
+            © 2025 Paros. Building stronger communities, one connection at a time.
           </p>
         </div>
       </footer>
