@@ -204,7 +204,7 @@ const GlobalMapBackground = ({ isDarkMode, user }) => {
 const ThemeToggleButton = ({ isDarkMode, onToggle }) => (
   <motion.button
     whileHover={{
-      backgroundColor: isDarkMode ? "#231a13" : "#E8DCC0",
+      backgroundColor: isDarkMode ? "#000000" : "#E8DCC0",
       color: isDarkMode ? "#E8DCC0" : "#231a13",
       border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
       transition: { duration: 0.3 }
@@ -212,19 +212,14 @@ const ThemeToggleButton = ({ isDarkMode, onToggle }) => (
     whileTap={{ scale: 0.95 }}
     onClick={onToggle}
     style={{
-      position: "fixed",
-      top: 20,
-      left: 20,
       backgroundColor: isDarkMode ? "#E8DCC0" : "#231a13",
       color: isDarkMode ? "#231a13" : "#E8DCC0",
       border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
       borderRadius: 0,
-      padding: "0.6rem 1rem",
+      padding: "0.8rem 1.5rem",
       fontSize: "1rem",
       fontWeight: 600,
       cursor: "pointer",
-      boxShadow: `0 4px 16px ${isDarkMode ? "rgba(232, 220, 192, 0.3)" : "rgba(35, 26, 19, 0.3)"}`,
-      zIndex: 1000,
       fontFamily: "'Inter', sans-serif",
       transition: "all 0.3s ease",
     }}
@@ -244,7 +239,7 @@ const Dashboard = ({ user, isDarkMode, onNavigate, listings, events }) => (
       style={{
         maxWidth: 1000,
         margin: "0 auto 4rem",
-        background: isDarkMode ? "rgba(35, 26, 19, 0.95)" : "rgba(251, 248, 241, 0.95)",
+        background: isDarkMode ? "rgba(0, 0, 0, 0.95)" : "rgba(251, 248, 241, 0.95)",
         backdropFilter: "blur(20px)",
         borderRadius: 0,
         padding: "3rem",
@@ -266,7 +261,7 @@ const Dashboard = ({ user, isDarkMode, onNavigate, listings, events }) => (
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "2rem", marginTop: "3rem" }}>
         {/* Quick Profile Stats */}
         <div style={{
-          background: isDarkMode ? "rgba(62, 39, 35, 0.9)" : "rgba(251, 248, 241, 0.9)",
+          background: isDarkMode ? "rgba(0, 0, 0, 0.9)" : "rgba(251, 248, 241, 0.9)",
           padding: "2rem",
           borderRadius: 0,
           border: `1px solid ${isDarkMode ? "rgba(152, 109, 106, 0.3)" : "rgba(249, 245, 237, 0.5)"}`,
@@ -292,7 +287,7 @@ const Dashboard = ({ user, isDarkMode, onNavigate, listings, events }) => (
 
         {/* Quick Actions */}
         <div style={{
-          background: isDarkMode ? "rgba(62, 39, 35, 0.9)" : "rgba(251, 248, 241, 0.9)",
+          background: isDarkMode ? "rgba(0, 0, 0, 0.9)" : "rgba(251, 248, 241, 0.9)",
           padding: "2rem",
           borderRadius: 0,
           border: `1px solid ${isDarkMode ? "rgba(152, 109, 106, 0.3)" : "rgba(249, 245, 237, 0.5)"}`,
@@ -305,8 +300,8 @@ const Dashboard = ({ user, isDarkMode, onNavigate, listings, events }) => (
               whileHover={{ scale: 1.02 }}
               onClick={() => onNavigate("browse")}
               style={{
-                backgroundColor: isDarkMode ? "#004d40" : "#E8DCC0",
-                color: isDarkMode ? "#E8DCC0" : "#231a13",
+                backgroundColor: isDarkMode ? "#E8DCC0" : "#231a13",
+                color: isDarkMode ? "#231a13" : "#E8DCC0",
                 border: "none",
                 borderRadius: 0,
                 padding: "0.9rem 1.5rem",
@@ -353,7 +348,7 @@ const Dashboard = ({ user, isDarkMode, onNavigate, listings, events }) => (
     >
       {/* Trending Listings */}
       <div style={{
-        background: isDarkMode ? "rgba(35, 26, 19, 0.95)" : "rgba(251, 248, 241, 0.95)",
+        background: isDarkMode ? "rgba(0, 0, 0, 0.95)" : "rgba(251, 248, 241, 0.95)",
         backdropFilter: "blur(20px)",
         borderRadius: 0,
         padding: "2rem",
@@ -375,7 +370,7 @@ const Dashboard = ({ user, isDarkMode, onNavigate, listings, events }) => (
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: index * 0.1 }}
             style={{
-              background: isDarkMode ? "rgba(62, 39, 35, 0.9)" : "rgba(251, 248, 241, 0.9)",
+              background: isDarkMode ? "rgba(0, 0, 0, 0.9)" : "rgba(251, 248, 241, 0.9)",
               padding: "1.5rem",
               marginBottom: "1rem",
               borderRadius: 0,
@@ -420,7 +415,7 @@ const Dashboard = ({ user, isDarkMode, onNavigate, listings, events }) => (
 
       {/* Upcoming Events */}
       <div style={{
-        background: isDarkMode ? "rgba(35, 26, 19, 0.95)" : "rgba(251, 248, 241, 0.95)",
+        background: isDarkMode ? "rgba(0, 0, 0, 0.95)" : "rgba(251, 248, 241, 0.95)",
         backdropFilter: "blur(20px)",
         borderRadius: 0,
         padding: "2rem",
@@ -442,7 +437,7 @@ const Dashboard = ({ user, isDarkMode, onNavigate, listings, events }) => (
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: index * 0.1 }}
             style={{
-              background: isDarkMode ? "rgba(62, 39, 35, 0.9)" : "rgba(251, 248, 241, 0.9)",
+              background: isDarkMode ? "rgba(0, 0, 0, 0.9)" : "rgba(251, 248, 241, 0.9)",
               padding: "1.5rem",
               marginBottom: "1rem",
               borderRadius: 0,
@@ -557,7 +552,7 @@ const SwipeableListings = ({ listings, isDarkMode }) => {
             position: "absolute",
             width: "100%",
             height: "100%",
-            background: isDarkMode ? "rgba(35, 26, 19, 0.95)" : "rgba(251, 248, 241, 0.95)",
+            background: isDarkMode ? "rgba(0, 0, 0, 0.95)" : "rgba(251, 248, 241, 0.95)",
             backdropFilter: "blur(20px)",
             borderRadius: "20px",
             padding: "2rem",
@@ -705,7 +700,7 @@ const SwipeableListings = ({ listings, isDarkMode }) => {
 };
 
 // **[ART GALLERY ACCESSIBLE NAVIGATION]**
-const ArtisticNavigation = ({ currentPage, onNavigate, onLogout, isDarkMode }) => (
+const ArtisticNavigation = ({ currentPage, onNavigate, onLogout }) => (
   <motion.nav
     initial={{ opacity: 0, y: -20 }}
     animate={{ opacity: 1, y: 0 }}
@@ -715,9 +710,9 @@ const ArtisticNavigation = ({ currentPage, onNavigate, onLogout, isDarkMode }) =
       left: 0,
       right: 0,
       zIndex: 900,
-      background: isDarkMode ? "rgba(35, 26, 19, 0.95)" : "rgba(251, 248, 241, 0.95)",
+      background: "rgba(251, 248, 241, 0.95)",
       backdropFilter: "blur(30px)",
-      borderBottom: `1px solid ${isDarkMode ? "rgba(129, 115, 105, 0.4)" : "rgba(249, 245, 237, 0.4)"}`,
+      borderBottom: "1px solid rgba(249, 245, 237, 0.4)",
       padding: "1.5rem 2rem",
     }}
   >
@@ -731,7 +726,7 @@ const ArtisticNavigation = ({ currentPage, onNavigate, onLogout, isDarkMode }) =
       <h1 style={{
         fontSize: "2rem",
         fontWeight: 600,
-        color: isDarkMode ? "#E8DCC0" : "#231a13",
+        color: "#231a13",
         cursor: "pointer",
         margin: 0,
         letterSpacing: "0.05em",
@@ -740,12 +735,12 @@ const ArtisticNavigation = ({ currentPage, onNavigate, onLogout, isDarkMode }) =
         Paros
       </h1>
 
-      <div style={{ display: "flex", gap: "2rem", alignItems: "center" }}>
+      <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
         {[
           { key: "dashboard", label: "Neighborhood Hub" },
           { key: "browse", label: "Community Exchange" },
           { key: "events", label: "Local Gatherings" },
-          { key: "profile", label: "My Profile" },
+          { key: "profile", label: "Profile" },
         ].map((item) => (
           <motion.button
             key={item.key}
@@ -755,8 +750,8 @@ const ArtisticNavigation = ({ currentPage, onNavigate, onLogout, isDarkMode }) =
             style={{
               background: "none",
               border: "none",
-              borderBottom: currentPage === item.key ? `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}` : "2px solid transparent",
-              color: isDarkMode ? "#E8DCC0" : "#231a13",
+              borderBottom: currentPage === item.key ? "2px solid #231a13" : "2px solid transparent",
+              color: "#231a13",
               padding: "0.8rem 1.5rem",
               borderRadius: 0,
               cursor: "pointer",
@@ -784,8 +779,8 @@ const ArtisticNavigation = ({ currentPage, onNavigate, onLogout, isDarkMode }) =
           whileTap={{ scale: 0.98 }}
           onClick={onLogout}
           style={{
-            backgroundColor: isDarkMode ? "#E8DCC0" : "#231a13",
-            color: isDarkMode ? "#231a13" : "#E8DCC0",
+            backgroundColor: "#231a13",
+            color: "#E8DCC0",
             border: "none",
             borderRadius: 0,
             padding: "0.8rem 1.5rem",
@@ -807,17 +802,8 @@ function App() {
   const [user, setUser] = useState(null);
   const [page, setPage] = useState("dashboard");
 
-  // Theme integration
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    const saved = localStorage.getItem('paros-theme');
-    return saved !== null ? JSON.parse(saved) : true;
-  });
-
-  useEffect(() => {
-    localStorage.setItem('paros-theme', JSON.stringify(isDarkMode));
-  }, [isDarkMode]);
-
-  const toggleTheme = () => setIsDarkMode(!isDarkMode);
+  // Light mode only for now
+  const isDarkMode = false;
 
   function onLoginSuccess(userData) {
     setUser(userData);
@@ -838,19 +824,17 @@ function App() {
   return (
     <>
       <GlobalMapBackground isDarkMode={isDarkMode} user={user} />
-      <ThemeToggleButton isDarkMode={isDarkMode} onToggle={toggleTheme} />
       <ArtisticNavigation
         currentPage={page}
         onNavigate={navigateTo}
         onLogout={handleLogout}
-        isDarkMode={isDarkMode}
       />
 
       <div style={{ overflowX: "hidden", marginTop: "120px" }}>
         {page === "dashboard" && (
           <Dashboard user={user} isDarkMode={isDarkMode} onNavigate={navigateTo} listings={dummyListings} events={dummyEvents} />
         )}
-        {page === "profile" && <UserProfile user={user} setUser={setUser} />}
+        {page === "profile" && <UserProfile user={user} setUser={setUser} isDarkMode={isDarkMode} />}
         {page === "browse" && <SwipeableListings listings={dummyListings} isDarkMode={isDarkMode} />}
         {page === "events" && <Events events={dummyEvents} isDarkMode={isDarkMode} />}
         {page === "create" && (

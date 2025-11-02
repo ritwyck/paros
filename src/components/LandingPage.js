@@ -83,39 +83,7 @@ const ScrollIndicator = ({ isDarkMode }) => {
   );
 };
 
-const ThemeToggleButton = ({ isDarkMode, onToggle }) => {
-  return (
-    <motion.button
-      onClick={onToggle}
-      whileHover={{
-        backgroundColor: isDarkMode ? "#231a13" : "#E8DCC0",
-        color: isDarkMode ? "#E8DCC0" : "#231a13",
-        border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
-        transition: { duration: 0.3 }
-      }}
-      whileTap={{ scale: 0.95 }}
-      style={{
-        position: "fixed",
-        top: 20,
-        left: 20, // Move to left side of screen
-        backgroundColor: isDarkMode ? "#E8DCC0" : "#231a13",
-        color: isDarkMode ? "#231a13" : "#E8DCC0",
-        border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
-        borderRadius: 0, // Sharp corners
-        padding: "0.6rem 1rem",
-        fontSize: "1rem",
-        fontWeight: 600,
-        cursor: "pointer",
-        boxShadow: `0 4px 16px ${isDarkMode ? "rgba(232, 220, 192, 0.3)" : "rgba(35, 26, 19, 0.3)"}`,
-        zIndex: 1000,
-        fontFamily: "'Inter', sans-serif",
-        transition: "all 0.3s ease",
-      }}
-    >
-      {isDarkMode ? "Light" : "Dark"}
-    </motion.button>
-  );
-};
+
 
 const GlobalMapBackground = ({ isDarkMode }) => {
   const mapRef = React.useRef();
@@ -209,10 +177,10 @@ const FloatingLoginButton = ({ onModalOpen, isDarkMode, style }) => {
   return (
     <motion.button
       whileHover={{
-        backgroundColor: isDarkMode ? "#231a13" : "#E8DCC0",
+        backgroundColor: isDarkMode ? "#000000" : "#E8DCC0",
         color: isDarkMode ? "#E8DCC0" : "#231a13",
         border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
-        BoxShadow: `0 4px 16px ${isDarkMode ? "rgba(35,26,19,0.4)" : "rgba(232,220,192,0.4)"}`,
+        BoxShadow: `0 4px 16px ${isDarkMode ? "rgba(0,0,0,0.4)" : "rgba(232,220,192,0.4)"}`,
         transition: { duration: 0.3 }
       }}
       onClick={onModalOpen}
@@ -228,7 +196,7 @@ const FloatingLoginButton = ({ onModalOpen, isDarkMode, style }) => {
         fontSize: "1rem",
         fontWeight: 600,
         cursor: "pointer",
-        boxShadow: `0 4px 16px ${isDarkMode ? "rgba(232, 220, 192, 0.3)" : "rgba(35, 26, 19, 0.3)"}`,
+        boxShadow: `0 4px 16px ${isDarkMode ? "rgba(232, 220, 192, 0.3)" : "rgba(0, 0, 0, 0.3)"}`,
         zIndex: 1000,
         fontFamily: "'Inter', sans-serif",
         transition: "all 0.3s ease",
@@ -250,7 +218,7 @@ const JoinSection = ({ isDarkMode, onOpenModal }) => {
       style={{
         maxWidth: 600,
         textAlign: "center",
-        background: isDarkMode ? "rgba(35, 26, 19, 0.95)" : "rgba(251, 248, 241, 0.95)",
+        background: isDarkMode ? "rgba(0, 0, 0, 0.95)" : "rgba(251, 248, 241, 0.95)",
         backdropFilter: "blur(20px)",
         borderRadius: 20,
         padding: "3rem",
@@ -300,7 +268,7 @@ const JoinSection = ({ isDarkMode, onOpenModal }) => {
           fontWeight: 600,
           cursor: "pointer",
           fontFamily: "'Inter', sans-serif",
-          boxShadow: isDarkMode ? "0 4px 16px rgba(35,26,19,0.3)" : "0 4px 16px rgba(251,248,241,0.2)",
+          boxShadow: isDarkMode ? "0 4px 16px rgba(0,0,0,0.3)" : "0 4px 16px rgba(251,248,241,0.2)",
           transition: "all 0.3s ease",
         }}
       >
@@ -311,11 +279,8 @@ const JoinSection = ({ isDarkMode, onOpenModal }) => {
 };
 
 export default function LandingPage({ onLoginSuccess }) {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    // Check if user has a preference stored
-    const saved = localStorage.getItem('paros-theme');
-    return saved !== null ? JSON.parse(saved) : true; // Default to dark mode
-  });
+  // Light mode only
+  const isDarkMode = false;
 
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
@@ -324,13 +289,6 @@ export default function LandingPage({ onLoginSuccess }) {
   const mockUsers = [
     { username: "demo", email: "demo@paros.com", password: "demo123", profilePic: null }
   ];
-
-  // Save theme preference
-  useEffect(() => {
-    localStorage.setItem('paros-theme', JSON.stringify(isDarkMode));
-  }, [isDarkMode]);
-
-  const toggleTheme = () => setIsDarkMode(!isDarkMode);
 
   const openModal = () => setShowAuthModal(true);
 
@@ -367,7 +325,6 @@ export default function LandingPage({ onLoginSuccess }) {
     <>
       <GlobalMapBackground isDarkMode={isDarkMode} />
       <FloatingLoginButton onModalOpen={openModal} isDarkMode={isDarkMode} />
-      <ThemeToggleButton isDarkMode={isDarkMode} onToggle={toggleTheme} />
       <div style={{ overflowX: "hidden" }}>
         {/* Hero Section */}
         <section
@@ -462,7 +419,7 @@ export default function LandingPage({ onLoginSuccess }) {
               maxWidth: 800,
               textAlign: "center",
               fontFamily: "'Inter', sans-serif",
-              background: isDarkMode ? "rgba(35, 26, 19, 0.95)" : "rgba(251, 248, 241, 0.95)",
+              background: isDarkMode ? "rgba(0, 0, 0, 0.95)" : "rgba(251, 248, 241, 0.95)",
               backdropFilter: "blur(20px)",
               borderRadius: 20,
               padding: "3rem",
@@ -566,7 +523,7 @@ export default function LandingPage({ onLoginSuccess }) {
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{ duration: 0.8, delay: index * 0.1 }}
                 style={{
-                  background: isDarkMode ? "rgba(35, 26, 19, 0.95)" : "rgba(251, 248, 241, 0.95)",
+                  background: isDarkMode ? "rgba(0, 0, 0, 0.95)" : "rgba(251, 248, 241, 0.95)",
                   backdropFilter: "blur(20px)",
                   border: `1px solid ${isDarkMode ? "rgba(249, 245, 237, 0.3)" : "rgba(249, 245, 237, 0.3)"}`,
                   borderRadius: 16,
@@ -622,7 +579,7 @@ export default function LandingPage({ onLoginSuccess }) {
             style={{
               position: "fixed",
               inset: 0,
-              backgroundColor: "rgba(35, 26, 19, 0.8)",
+              backgroundColor: "rgba(0, 0, 0, 0.8)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",

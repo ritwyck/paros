@@ -62,7 +62,7 @@ const lendingOptions = [
   "Wheelchair & Mobility Aids"
 ];
 
-function UserProfile({ user, setUser }) {
+function UserProfile({ user, setUser, isDarkMode }) {
   const [isEditing, setIsEditing] = useState(false);
 
   const [profileData, setProfileData] = useState({
@@ -196,11 +196,11 @@ function UserProfile({ user, setUser }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           style={{
-            background: "rgba(251, 248, 241, 0.95)",
+            background: isDarkMode ? "rgba(0, 0, 0, 0.95)" : "rgba(251, 248, 241, 0.95)",
             backdropFilter: "blur(20px)",
             borderRadius: "20px",
             padding: "3rem",
-            border: "1px solid rgba(249, 245, 237, 0.4)",
+            border: `1px solid ${isDarkMode ? "rgba(129, 115, 105, 0.4)" : "rgba(249, 245, 237, 0.4)"}`,
             boxShadow: "0 20px 60px rgba(0,0,0,0.1)"
           }}
         >
@@ -210,7 +210,7 @@ function UserProfile({ user, setUser }) {
               fontSize: "3rem",
               fontWeight: 700,
               marginBottom: "0.5rem",
-              color: "#231a13",
+              color: isDarkMode ? "#E8DCC0" : "#231a13",
               textTransform: "uppercase",
               letterSpacing: "0.1em"
             }}>
@@ -218,7 +218,7 @@ function UserProfile({ user, setUser }) {
             </h1>
             <p style={{
               fontSize: "1.2rem",
-              color: "#666",
+              color: isDarkMode ? "#E8DCC0" : "#666",
               marginBottom: "2rem"
             }}>
               @{profileData.username}
@@ -262,7 +262,7 @@ function UserProfile({ user, setUser }) {
             {/* Basic Info */}
             <div>
               <h2 style={{
-                color: "#231a13",
+                color: isDarkMode ? "#E8DCC0" : "#231a13",
                 marginBottom: "1.5rem",
                 fontSize: "1.8rem",
                 fontWeight: 600
@@ -270,11 +270,11 @@ function UserProfile({ user, setUser }) {
                 Location
               </h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                <p style={{ color: "#231a13", margin: 0, fontSize: "1.1rem" }}>
+                <p style={{ color: isDarkMode ? "#E8DCC0" : "#231a13", margin: 0, fontSize: "1.1rem" }}>
                   📍 {profileData.city}, {profileData.province}, {profileData.country}
                 </p>
                 {profileData.pinCode && (
-                  <p style={{ color: "#666", margin: 0, fontSize: "0.9rem" }}>
+                  <p style={{ color: isDarkMode ? "#E8DCC0" : "#666", margin: 0, fontSize: "0.9rem" }}>
                     PIN: {profileData.pinCode}
                   </p>
                 )}
@@ -285,7 +285,7 @@ function UserProfile({ user, setUser }) {
             {profileData.aboutMe && (
               <div>
                 <h2 style={{
-                  color: "#231a13",
+                  color: isDarkMode ? "#E8DCC0" : "#231a13",
                   marginBottom: "1.5rem",
                   fontSize: "1.8rem",
                   fontWeight: 600
@@ -293,7 +293,7 @@ function UserProfile({ user, setUser }) {
                   About Me
                 </h2>
                 <p style={{
-                  color: "#231a13",
+                  color: isDarkMode ? "#E8DCC0" : "#231a13",
                   lineHeight: 1.6,
                   fontSize: "1rem",
                   margin: 0
@@ -310,7 +310,7 @@ function UserProfile({ user, setUser }) {
             {(profileData.skills.length > 0 || profileData.customSkills.length > 0) && (
               <div>
                 <h2 style={{
-                  color: "#231a13",
+                  color: isDarkMode ? "#E8DCC0" : "#231a13",
                   marginBottom: "1.5rem",
                   fontSize: "1.8rem",
                   fontWeight: 600
@@ -342,7 +342,7 @@ function UserProfile({ user, setUser }) {
             {(profileData.lendingItems.length > 0 || profileData.customLending.length > 0) && (
               <div>
                 <h2 style={{
-                  color: "#231a13",
+                  color: isDarkMode ? "#E8DCC0" : "#231a13",
                   marginBottom: "1.5rem",
                   fontSize: "1.8rem",
                   fontWeight: 600
@@ -356,7 +356,7 @@ function UserProfile({ user, setUser }) {
                       style={{
                         display: "inline-block",
                         padding: "0.5rem 1rem",
-                        background: "#231a13",
+                        background: "#000000",
                         color: "#E8DCC0",
                         borderRadius: "20px",
                         fontSize: "0.9rem",
@@ -375,7 +375,7 @@ function UserProfile({ user, setUser }) {
           {profileData.barterPreferences && (
             <div style={{ marginTop: "3rem" }}>
               <h2 style={{
-                color: "#231a13",
+                color: isDarkMode ? "#E8DCC0" : "#231a13",
                 marginBottom: "1.5rem",
                 fontSize: "1.8rem",
                 fontWeight: 600
@@ -383,13 +383,13 @@ function UserProfile({ user, setUser }) {
                 Barter Preferences
               </h2>
               <div style={{
-                background: "rgba(232, 220, 192, 0.1)",
+                background: isDarkMode ? "rgba(232, 220, 192, 0.05)" : "rgba(232, 220, 192, 0.1)",
                 padding: "1.5rem",
                 borderRadius: "12px",
                 border: "1px solid #E8DCC0"
               }}>
                 <p style={{
-                  color: "#231a13",
+                  color: isDarkMode ? "#E8DCC0" : "#231a13",
                   lineHeight: 1.6,
                   fontSize: "1rem",
                   margin: 0
@@ -421,7 +421,7 @@ function UserProfile({ user, setUser }) {
                 fontSize: "1.2rem",
                 fontWeight: 700,
                 cursor: "pointer",
-                boxShadow: "0 4px 16px rgba(35, 26, 19, 0.3)",
+                boxShadow: "0 4px 16px rgba(0, 0, 0, 0.3)",
                 textTransform: "uppercase",
                 letterSpacing: "0.05em"
               }}
@@ -447,11 +447,11 @@ function UserProfile({ user, setUser }) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         style={{
-          background: "rgba(251, 248, 241, 0.95)",
+          background: isDarkMode ? "rgba(0, 0, 0, 0.95)" : "rgba(251, 248, 241, 0.95)",
           backdropFilter: "blur(20px)",
           borderRadius: "20px",
           padding: "2rem",
-          border: "1px solid rgba(249, 245, 237, 0.4)",
+          border: `1px solid ${isDarkMode ? "rgba(129, 115, 105, 0.4)" : "rgba(249, 245, 237, 0.4)"}`,
           boxShadow: "0 20px 60px rgba(0,0,0,0.1)"
         }}
       >
@@ -459,7 +459,7 @@ function UserProfile({ user, setUser }) {
           <h1 style={{
             fontSize: "2.5rem",
             fontWeight: 700,
-            color: "#231a13",
+            color: isDarkMode ? "#E8DCC0" : "#231a13",
             textTransform: "uppercase",
             letterSpacing: "0.1em",
             margin: 0
@@ -530,7 +530,7 @@ function UserProfile({ user, setUser }) {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
             >
-              <h2 style={{ color: "#231a13", marginBottom: "1.5rem", fontSize: "1.5rem" }}>
+              <h2 style={{ color: isDarkMode ? "#E8DCC0" : "#231a13", marginBottom: "1.5rem", fontSize: "1.5rem" }}>
                 Basic Information
               </h2>
 
@@ -1106,7 +1106,7 @@ function UserProfile({ user, setUser }) {
                 fontSize: "1.2rem",
                 fontWeight: 700,
                 cursor: "pointer",
-                boxShadow: "0 4px 16px rgba(35, 26, 19, 0.3)",
+                boxShadow: "0 4px 16px rgba(0, 0, 0, 0.3)",
                 textTransform: "uppercase",
                 letterSpacing: "0.05em"
               }}

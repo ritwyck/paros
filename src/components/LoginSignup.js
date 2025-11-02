@@ -23,14 +23,14 @@ function LoginSignup({ onLogin, isDarkMode }) {
         maxWidth: 520,
         margin: "0 auto",
         padding: "2.5rem 3rem",
-        background: isDarkMode ? "rgba(35, 26, 19, 0.98)" : "rgba(251, 248, 241, 0.98)",
+        background: isDarkMode ? "rgba(0, 0, 0, 0.98)" : "rgba(251, 248, 241, 0.98)",
         borderRadius: 0, // Sharp corners for gallery aesthetic
         boxShadow: isDarkMode
           ? "0 25px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05)"
           : "0 25px 80px rgba(0,0,0,0.15), inset 0 1px 0 rgba(0,0,0,0.05)",
         border: `1px solid ${isDarkMode ? "rgba(129, 115, 105, 0.4)" : "rgba(249, 245, 237, 0.4)"}`,
         fontFamily: "'Inter', sans-serif",
-        color: isDarkMode ? "#E8DCC0" : "#231a13",
+        color: isDarkMode ? "#E8DCC0" : "#000000",
         backdropFilter: "blur(30px)",
         position: "relative",
         overflow: "hidden",
@@ -154,7 +154,7 @@ function LoginSignup({ onLogin, isDarkMode }) {
               fontSize: "1rem",
               borderRadius: 0,
               border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
-              background: isDarkMode ? "rgba(35, 26, 19, 0.6)" : "rgba(251, 248, 241, 0.6)",
+              background: isDarkMode ? "rgba(0, 0, 0, 0.6)" : "rgba(251, 248, 241, 0.6)",
               color: isDarkMode ? "#E8DCC0" : "#231a13",
               outline: "none",
               fontFamily: "'Inter', sans-serif",
@@ -188,7 +188,7 @@ function LoginSignup({ onLogin, isDarkMode }) {
                 fontSize: "1rem",
                 borderRadius: 0,
                 border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
-                background: isDarkMode ? "rgba(35, 26, 19, 0.6)" : "rgba(251, 248, 241, 0.6)",
+                background: isDarkMode ? "rgba(0, 0, 0, 0.6)" : "rgba(251, 248, 241, 0.6)",
                 color: isDarkMode ? "#E8DCC0" : "#231a13",
                 outline: "none",
                 fontFamily: "'Inter', sans-serif",
@@ -222,7 +222,7 @@ function LoginSignup({ onLogin, isDarkMode }) {
               fontSize: "1rem",
               borderRadius: 0,
               border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
-              background: isDarkMode ? "rgba(35, 26, 19, 0.6)" : "rgba(251, 248, 241, 0.6)",
+              background: isDarkMode ? "rgba(0, 0, 0, 0.6)" : "rgba(251, 248, 241, 0.6)",
               color: isDarkMode ? "#E8DCC0" : "#231a13",
               outline: "none",
               fontFamily: "'Inter', sans-serif",
@@ -283,8 +283,8 @@ function LoginSignup({ onLogin, isDarkMode }) {
           <div style={{
             marginTop: "1.5rem",
             padding: "0.7rem",
-            background: isDarkMode ? "rgba(232, 220, 192, 0.1)" : "rgba(35, 26, 19, 0.1)",
-            border: `1px solid ${isDarkMode ? "rgba(232, 220, 192, 0.3)" : "rgba(35, 26, 19, 0.3)"}`,
+            background: isDarkMode ? "rgba(232, 220, 192, 0.1)" : "rgba(0, 0, 0, 0.1)",
+            border: `1px solid ${isDarkMode ? "rgba(232, 220, 192, 0.3)" : "rgba(0, 0, 0, 0.3)"}`,
             borderRadius: 0,
             textAlign: "center"
           }}>
