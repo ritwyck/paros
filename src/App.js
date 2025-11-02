@@ -17,6 +17,81 @@ L.Icon.Default.mergeOptions({
 });
 
 // Community Help System Data
+const dummyUsers = [
+  {
+    id: 1,
+    username: "maria_g",
+    preferredName: "Maria",
+    country: "Netherlands",
+    province: "North Holland",
+    city: "Amsterdam",
+    pinCode: "1012",
+    aboutMe: "Passionate gardener and community organizer. Love helping neighbors grow their own food!",
+    skills: ["Gardening & Landscaping", "Cooking & Baking"],
+    customSkills: [],
+    lendingItems: ["Garden Tools"],
+    customLending: [],
+    barterPreferences: "Happy to trade gardening help for cooking lessons or fresh produce.",
+    profileImages: [null, null, null, null, null, null],
+    trustScore: 4.8,
+    joinDate: "2024-03-15"
+  },
+  {
+    id: 2,
+    username: "alex_r",
+    preferredName: "Alex",
+    country: "Netherlands",
+    province: "North Holland",
+    city: "Amsterdam",
+    pinCode: "1015",
+    aboutMe: "Professional musician and teacher. Love sharing the joy of music with the community.",
+    skills: ["Music Lessons", "Tutoring & Teaching"],
+    customSkills: ["Guitar Instruction"],
+    lendingItems: ["Musical Instruments"],
+    customLending: [],
+    barterPreferences: "Prefer cash but open to music-related trades.",
+    profileImages: [null, null, null, null, null, null],
+    trustScore: 4.9,
+    joinDate: "2024-01-20"
+  },
+  {
+    id: 3,
+    username: "david_k",
+    preferredName: "David",
+    country: "Netherlands",
+    province: "North Holland",
+    city: "Amsterdam",
+    pinCode: "1017",
+    aboutMe: "DIY enthusiast and tool collector. Always happy to lend a hand (or a tool)!",
+    skills: ["Home Repairs & Maintenance", "Carpentry & Woodworking"],
+    customSkills: [],
+    lendingItems: ["Power Tools", "Lawn Equipment"],
+    customLending: ["Cordless Drill Set"],
+    barterPreferences: "Love tool swaps and repair work trades.",
+    profileImages: [null, null, null, null, null, null],
+    trustScore: 4.7,
+    joinDate: "2024-05-10"
+  },
+  {
+    id: 4,
+    username: "community_council",
+    preferredName: "Community Council",
+    country: "Netherlands",
+    province: "North Holland",
+    city: "Amsterdam",
+    pinCode: "1011",
+    aboutMe: "Official community organization coordinating events and initiatives for our neighborhood.",
+    skills: ["Event Planning", "Community Organization"],
+    customSkills: [],
+    lendingItems: ["Party Supplies", "Community Spaces"],
+    customLending: [],
+    barterPreferences: "Non-profit organization - all services are free to community members.",
+    profileImages: [null, null, null, null, null, null],
+    trustScore: 5.0,
+    joinDate: "2023-01-01"
+  }
+];
+
 const dummyListings = [
   {
     id: 1,
@@ -26,6 +101,7 @@ const dummyListings = [
     description: "Need help with weeding and planting in my backyard garden. Happy to pay $20/hour or trade fresh vegetables!",
     location: "Downtown",
     helper: "Maria G.",
+    helperId: 1,
     lastActive: "2 hours ago",
     compensation: "$20/hr or barter"
   },
@@ -37,6 +113,7 @@ const dummyListings = [
     description: "Experienced guitarist offering lessons for beginners. $25 per hour, flexible scheduling.",
     location: "Westside",
     helper: "Alex R.",
+    helperId: 2,
     lastActive: "5 hours ago",
     compensation: "$25/hour"
   },
@@ -48,6 +125,7 @@ const dummyListings = [
     description: "Electric lawn mower in great condition. Available to borrow for $10/day. Gas included.",
     location: "Eastside",
     helper: "David K.",
+    helperId: 3,
     lastActive: "1 day ago",
     compensation: "$10/day"
   }
@@ -62,6 +140,7 @@ const dummyEvents = [
     location: "Riverside Park, pavilion area",
     description: "Join our community garden transformation! Bring gardening tools, gloves, and water bottles.",
     curator: "Community Council",
+    curatorId: 4,
     attendees: ["Maria G.", "Carlos L.", "Sophie W.", "+12 more"],
     category: "gardening",
     lastActive: "Featured"
@@ -139,7 +218,7 @@ const GlobalMapBackground = ({ isDarkMode, user }) => {
 };
 
 // Natural Luxury Dashboard Component
-const Dashboard = ({ user, isDarkMode, onNavigate, listings, events }) => {
+const Dashboard = ({ user, isDarkMode, onNavigate, listings, events, onMessage, onReport, users }) => {
   const [isMobile, setIsMobile] = useState(false);
 
   React.useEffect(() => {
@@ -736,17 +815,63 @@ const Dashboard = ({ user, isDarkMode, onNavigate, listings, events }) => {
                         {listing.helper} • {listing.lastActive}
                       </small>
                     </div>
-                  <span style={{
-                    background: "linear-gradient(135deg, #E8DCC0 0%, #D4C4A8 100%)",
-                    color: "#231a13",
-                    padding: "0.5rem 1rem",
-                    borderRadius: "20px",
-                    fontSize: "0.9rem",
-                    fontWeight: 600,
-                    fontFamily: "'Inter', sans-serif"
-                  }}>
-                    {listing.compensation}
-                  </span>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "flex-end" }}>
+                    <span style={{
+                      background: "linear-gradient(135deg, #E8DCC0 0%, #D4C4A8 100%)",
+                      color: "#231a13",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "20px",
+                      fontSize: "0.9rem",
+                      fontWeight: 600,
+                      fontFamily: "'Inter', sans-serif"
+                    }}>
+                      {listing.compensation}
+                    </span>
+                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onMessage({ id: listing.helperId, name: listing.helper });
+                        }}
+                        style={{
+                          background: "#8B7355",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "12px",
+                          padding: "0.4rem 0.8rem",
+                          fontSize: "0.8rem",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          fontFamily: "'Inter', sans-serif"
+                        }}
+                      >
+                        Message
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onReport({ id: listing.helperId, name: listing.helper, username: listing.helper.toLowerCase().replace(' ', '_') });
+                        }}
+                        style={{
+                          background: "transparent",
+                          color: "#666",
+                          border: "1px solid #E8DCC0",
+                          borderRadius: "12px",
+                          padding: "0.4rem 0.8rem",
+                          fontSize: "0.8rem",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          fontFamily: "'Inter', sans-serif"
+                        }}
+                      >
+                        Report
+                      </motion.button>
+                    </div>
+                  </div>
                   </div>
                 </div>
               </div>
@@ -872,17 +997,63 @@ const Dashboard = ({ user, isDarkMode, onNavigate, listings, events }) => {
                       {event.curator} • {event.lastActive}
                     </small>
                   </div>
-                  <span style={{
-                    background: "#8B7355",
-                    color: "white",
-                    padding: "0.5rem 1rem",
-                    borderRadius: "20px",
-                    fontSize: "0.9rem",
-                    fontWeight: 600,
-                    fontFamily: "'Inter', sans-serif"
-                  }}>
-                    {event.date}
-                  </span>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem", alignItems: "flex-end" }}>
+                    <span style={{
+                      background: "#8B7355",
+                      color: "white",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "20px",
+                      fontSize: "0.9rem",
+                      fontWeight: 600,
+                      fontFamily: "'Inter', sans-serif"
+                    }}>
+                      {event.date}
+                    </span>
+                    <div style={{ display: "flex", gap: "0.5rem" }}>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onMessage({ id: event.curatorId, name: event.curator });
+                        }}
+                        style={{
+                          background: "#8B7355",
+                          color: "white",
+                          border: "none",
+                          borderRadius: "12px",
+                          padding: "0.4rem 0.8rem",
+                          fontSize: "0.8rem",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          fontFamily: "'Inter', sans-serif"
+                        }}
+                      >
+                        Message
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onReport({ id: event.curatorId, name: event.curator, username: event.curator.toLowerCase().replace(' ', '_') });
+                        }}
+                        style={{
+                          background: "transparent",
+                          color: "#666",
+                          border: "1px solid #E8DCC0",
+                          borderRadius: "12px",
+                          padding: "0.4rem 0.8rem",
+                          fontSize: "0.8rem",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          fontFamily: "'Inter', sans-serif"
+                        }}
+                      >
+                        Report
+                      </motion.button>
+                    </div>
+                  </div>
                 </div>
               </div>
               </div>
@@ -895,8 +1066,292 @@ const Dashboard = ({ user, isDarkMode, onNavigate, listings, events }) => {
 );
 };
 
+// Messages Page Component
+const MessagesPage = ({ currentUser, users, onMessage }) => {
+  const [conversations, setConversations] = useState([]);
+
+  React.useEffect(() => {
+    // Find all conversations for the current user
+    const userConversations = [];
+
+    users.forEach(otherUser => {
+      if (otherUser.id !== currentUser.id) {
+        // Use consistent key ordering (smaller ID first)
+        const conversationKey = `messages_v2_${Math.min(currentUser.id, otherUser.id)}_${Math.max(currentUser.id, otherUser.id)}`;
+        const messages = localStorage.getItem(conversationKey);
+
+        if (messages) {
+          const parsedMessages = JSON.parse(messages);
+          if (parsedMessages.length > 0) {
+            // Sort messages by timestamp and get the last one
+            parsedMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+            const lastMessage = parsedMessages[parsedMessages.length - 1];
+
+            userConversations.push({
+              user: otherUser,
+              lastMessage,
+              messageCount: parsedMessages.length,
+              lastMessageTime: new Date(lastMessage.timestamp)
+            });
+          }
+        }
+      }
+    });
+
+    // Sort by most recent message
+    userConversations.sort((a, b) => b.lastMessageTime - a.lastMessageTime);
+    setConversations(userConversations);
+  }, [currentUser, users]);
+
+  const [isMobile, setIsMobile] = useState(false);
+
+  React.useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  return (
+    <div style={{
+      position: "relative",
+      zIndex: 10,
+      padding: isMobile ? "2rem 1rem 4rem" : "3rem 2rem 5rem",
+      minHeight: "100vh",
+      fontFamily: "'Inter', sans-serif"
+    }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        style={{
+          textAlign: "center",
+          marginBottom: isMobile ? "2rem" : "4rem",
+          padding: isMobile ? "2rem 0" : "3rem 0"
+        }}
+      >
+        <motion.div
+          initial={{ scale: 0.95 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          style={{
+            display: "inline-block",
+            padding: isMobile ? "1.5rem 2rem" : "2rem 3rem",
+            background: "rgba(232, 220, 192, 0.9)",
+            borderRadius: "16px",
+            boxShadow: "0 12px 40px rgba(232, 220, 192, 0.25)",
+            border: "1px solid rgba(232, 220, 192, 0.3)",
+            backdropFilter: "blur(10px)"
+          }}
+        >
+          <h1 style={{
+            fontSize: isMobile ? "1.8rem" : "2.5rem",
+            fontWeight: 500,
+            color: "#231a13",
+            margin: 0,
+            letterSpacing: "0.02em",
+            textTransform: "uppercase",
+            fontFamily: "'Inter', sans-serif"
+          }}>
+            Your Messages
+          </h1>
+        </motion.div>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          style={{
+            fontSize: isMobile ? "1rem" : "1.2rem",
+            color: "#231a13",
+            margin: isMobile ? "1.5rem auto 0" : "2rem auto 0",
+            fontWeight: 400,
+            maxWidth: isMobile ? "90%" : "500px",
+            lineHeight: 1.6,
+            fontFamily: "'Inter', sans-serif",
+            textShadow: "0 1px 2px rgba(255,255,255,0.8)"
+          }}
+        >
+          Connect with your community members
+        </motion.p>
+      </motion.div>
+
+      <div style={{
+        maxWidth: "800px",
+        margin: "0 auto",
+        display: "grid",
+        gap: "1rem"
+      }}>
+        {conversations.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{
+              textAlign: "center",
+              padding: "4rem 2rem",
+              background: "white",
+              borderRadius: "16px",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
+              border: "1px solid rgba(249, 245, 237, 0.6)"
+            }}
+          >
+            <div style={{
+              width: "80px",
+              height: "80px",
+              borderRadius: "50%",
+              background: "linear-gradient(135deg, #E8DCC0 0%, #D4C4A8 100%)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0 auto 1.5rem",
+              fontSize: "2rem",
+              color: "#E8DCC0"
+            }}>
+              0
+            </div>
+            <h3 style={{ margin: "0 0 1rem 0", color: "#231a13" }}>No messages yet</h3>
+            <p style={{ margin: 0, color: "#666", fontSize: "1rem" }}>
+              Start conversations by messaging people from listings and events!
+            </p>
+          </motion.div>
+        ) : (
+          conversations.map((conversation, index) => (
+            <motion.div
+              key={conversation.user.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+              whileHover={{ scale: 1.01 }}
+              onClick={() => onMessage(conversation.user)}
+              style={{
+                background: "white",
+                borderRadius: "16px",
+                padding: "2rem",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
+                border: "1px solid rgba(249, 245, 237, 0.6)",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+                position: "relative",
+                overflow: "hidden"
+              }}
+            >
+              <div style={{
+                position: "absolute",
+                top: 0,
+                right: 0,
+                width: "80px",
+                height: "80px",
+                background: "radial-gradient(circle, rgba(232,220,192,0.08) 0%, transparent 70%)",
+                borderRadius: "50%",
+                transform: "translate(30px, -30px)"
+              }} />
+
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "1.5rem",
+                position: "relative",
+                zIndex: 1
+              }}>
+                <div style={{
+                  width: "60px",
+                  height: "60px",
+                  borderRadius: "50%",
+                  background: "#8B7355",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "white",
+                  fontSize: "1.5rem",
+                  fontWeight: "bold",
+                  flexShrink: 0,
+                  boxShadow: "0 4px 16px rgba(139, 115, 85, 0.3)"
+                }}>
+                  {conversation.user.preferredName?.charAt(0) || conversation.user.username?.charAt(0)}
+                </div>
+
+                <div style={{ flex: 1 }}>
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    marginBottom: "0.5rem"
+                  }}>
+                    <h3 style={{
+                      margin: 0,
+                      color: "#231a13",
+                      fontSize: "1.3rem",
+                      fontWeight: 600
+                    }}>
+                      {conversation.user.preferredName || conversation.user.username}
+                    </h3>
+                    <span style={{
+                      color: "#999",
+                      fontSize: "0.9rem",
+                      fontWeight: 500
+                    }}>
+                      {conversation.lastMessageTime.toLocaleDateString()}
+                    </span>
+                  </div>
+
+                  <p style={{
+                    margin: "0 0 0.5rem 0",
+                    color: "#666",
+                    fontSize: "1rem",
+                    lineHeight: 1.4,
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden"
+                  }}>
+                    {conversation.lastMessage.text}
+                  </p>
+
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "1rem"
+                  }}>
+                    <span style={{
+                      background: "#E8DCC0",
+                      color: "#231a13",
+                      padding: "0.25rem 0.75rem",
+                      borderRadius: "12px",
+                      fontSize: "0.8rem",
+                      fontWeight: 600
+                    }}>
+                      Trust Score: {conversation.user.trustScore}
+                    </span>
+                    <span style={{
+                      color: "#999",
+                      fontSize: "0.9rem"
+                    }}>
+                      {conversation.messageCount} message{conversation.messageCount > 1 ? 's' : ''}
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{
+                  color: "#8B7355",
+                  fontSize: "1.5rem",
+                  fontWeight: "bold"
+                }}>
+                  →
+                </div>
+              </div>
+            </motion.div>
+          ))
+        )}
+      </div>
+    </div>
+  );
+};
+
 // Luxury Swipeable Listings Component
-const SwipeableListings = ({ listings, isDarkMode }) => {
+const SwipeableListings = ({ listings, isDarkMode, onCreateListing }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
 
@@ -952,12 +1407,33 @@ const SwipeableListings = ({ listings, isDarkMode }) => {
         <p style={{
           fontSize: "1rem",
           color: "#666",
-          margin: "0.5rem 0 0 0",
+          margin: "0.5rem 0 1rem 0",
           fontWeight: 400,
           fontFamily: "'Inter', sans-serif"
         }}>
           Swipe to find the perfect match for your needs
         </p>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={onCreateListing}
+          style={{
+            background: "#8B7355",
+            color: "white",
+            border: "none",
+            borderRadius: "12px",
+            padding: "1rem 2rem",
+            fontSize: "1.1rem",
+            fontWeight: 600,
+            cursor: "pointer",
+            fontFamily: "'Inter', sans-serif",
+            transition: "all 0.3s ease",
+            boxShadow: "0 4px 16px rgba(139, 115, 85, 0.3)"
+          }}
+        >
+          + Create New Listing
+        </motion.button>
       </motion.div>
 
       <div style={{
@@ -1270,6 +1746,7 @@ const CleanNavigation = ({ currentPage, onNavigate, onLogout }) => {
 
   const menuItems = [
     { key: "dashboard", label: "Dashboard" },
+    { key: "messages", label: "Messages" },
     { key: "browse", label: "Listings" },
     { key: "events", label: "Events" },
     { key: "profile", label: "Profile" },
@@ -1729,24 +2206,943 @@ const Footer = () => {
   );
 };
 
+// Messaging Component
+const MessagingModal = ({ isOpen, onClose, recipient, currentUser, users }) => {
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+
+  // Load messages when recipient changes
+  React.useEffect(() => {
+    if (recipient && currentUser) {
+      // Use consistent key ordering (smaller ID first)
+      const conversationKey = `messages_v2_${Math.min(currentUser.id, recipient.id)}_${Math.max(currentUser.id, recipient.id)}`;
+      const saved = localStorage.getItem(conversationKey);
+      setMessages(saved ? JSON.parse(saved) : []);
+    } else {
+      setMessages([]);
+    }
+  }, [recipient, currentUser]);
+
+  const recipientData = recipient ? users.find(u => u.id === recipient.id) : null;
+
+  const sendMessage = () => {
+    if (message.trim()) {
+      const newMessage = {
+        id: Date.now(),
+        senderId: currentUser.id,
+        recipientId: recipient.id,
+        text: message.trim(),
+        timestamp: new Date().toISOString()
+      };
+      const updatedMessages = [...messages, newMessage];
+      setMessages(updatedMessages);
+
+      // Use consistent key ordering (smaller ID first)
+      const conversationKey = `messages_v2_${Math.min(currentUser.id, recipient.id)}_${Math.max(currentUser.id, recipient.id)}`;
+      localStorage.setItem(conversationKey, JSON.stringify(updatedMessages));
+      setMessage("");
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: "rgba(0,0,0,0.5)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 2000,
+      padding: "1rem"
+    }}>
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        style={{
+          background: "white",
+          borderRadius: "20px",
+          width: "100%",
+          maxWidth: "500px",
+          maxHeight: "80vh",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden"
+        }}
+      >
+        {/* Header */}
+        <div style={{
+          padding: "1.5rem",
+          borderBottom: "1px solid #E8DCC0",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between"
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <div style={{
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              background: "#8B7355",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "white",
+              fontSize: "1.2rem",
+              fontWeight: "bold"
+            }}>
+              {recipientData?.preferredName?.charAt(0) || recipient.name?.charAt(0)}
+            </div>
+            <div>
+              <h3 style={{ margin: 0, color: "#231a13", fontSize: "1.2rem" }}>
+                {recipientData?.preferredName || recipient.name}
+              </h3>
+              <p style={{ margin: "0.25rem 0 0 0", color: "#666", fontSize: "0.9rem" }}>
+                Trust Score: {recipientData?.trustScore || "N/A"}
+              </p>
+              {recipientData?.joinDate && (
+                <p style={{ margin: "0.1rem 0 0 0", color: "#666", fontSize: "0.8rem" }}>
+                  Member since {new Date(recipientData.joinDate).toLocaleDateString()}
+                  {(() => {
+                    const joinDate = new Date(recipientData.joinDate);
+                    const now = new Date();
+                    const diffTime = Math.abs(now - joinDate);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    if (diffDays < 30) {
+                      return ` (${diffDays} days ago)`;
+                    } else if (diffDays < 365) {
+                      const months = Math.floor(diffDays / 30);
+                      return ` (${months} month${months > 1 ? 's' : ''} ago)`;
+                    } else {
+                      const years = Math.floor(diffDays / 365);
+                      return ` (${years} year${years > 1 ? 's' : ''} ago)`;
+                    }
+                  })()}
+                </p>
+              )}
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              background: "none",
+              border: "none",
+              fontSize: "1.5rem",
+              cursor: "pointer",
+              color: "#666",
+              padding: "0.5rem"
+            }}
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Messages */}
+        <div style={{
+          flex: 1,
+          padding: "1rem",
+          overflowY: "auto",
+          maxHeight: "400px"
+        }}>
+          {messages.length === 0 ? (
+            <div style={{
+              textAlign: "center",
+              color: "#666",
+              padding: "2rem",
+              fontStyle: "italic"
+            }}>
+              Start a conversation with {recipientData?.preferredName || recipient.name}
+            </div>
+          ) : (
+            messages.map(msg => (
+              <div key={msg.id} style={{
+                marginBottom: "1rem",
+                display: "flex",
+                justifyContent: msg.senderId === currentUser.id ? "flex-end" : "flex-start"
+              }}>
+                <div style={{
+                  maxWidth: "70%",
+                  padding: "0.75rem 1rem",
+                  borderRadius: "18px",
+                  background: msg.senderId === currentUser.id ? "#E8DCC0" : "#f5f5f5",
+                  color: msg.senderId === currentUser.id ? "#231a13" : "#333",
+                  fontSize: "0.9rem",
+                  lineHeight: 1.4
+                }}>
+                  {msg.text}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Input */}
+        <div style={{
+          padding: "1rem",
+          borderTop: "1px solid #E8DCC0",
+          display: "flex",
+          gap: "0.5rem"
+        }}>
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Type your message..."
+            style={{
+              flex: 1,
+              padding: "0.75rem 1rem",
+              border: "2px solid #E8DCC0",
+              borderRadius: "25px",
+              outline: "none",
+              fontSize: "1rem"
+            }}
+          />
+          <button
+            onClick={sendMessage}
+            disabled={!message.trim()}
+            style={{
+              padding: "0.75rem 1.5rem",
+              background: message.trim() ? "#8B7355" : "#ccc",
+              color: "white",
+              border: "none",
+              borderRadius: "25px",
+              cursor: message.trim() ? "pointer" : "not-allowed",
+              fontSize: "1rem",
+              fontWeight: "bold"
+            }}
+          >
+            Send
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+// Create Listing Modal Component
+const CreateListingModal = ({ isOpen, onClose, currentUser }) => {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("");
+  const [compensation, setCompensation] = useState("");
+  const [location, setLocation] = useState("");
+
+  const categories = [
+    { value: "service", label: "Service Help" },
+    { value: "skill", label: "Skill Teaching" },
+    { value: "lend", label: "Lending Item" }
+  ];
+
+  const submitListing = () => {
+    if (title.trim() && description.trim() && category && compensation.trim() && location.trim()) {
+      const newListing = {
+        id: Date.now(),
+        title: title.trim(),
+        category,
+        type: category === "service" ? "help" : category === "skill" ? "teach" : "borrow",
+        description: description.trim(),
+        location: location.trim(),
+        helper: currentUser.preferredName || currentUser.username,
+        helperId: currentUser.id,
+        lastActive: "just now",
+        compensation: compensation.trim()
+      };
+
+      // In a real app, this would be sent to a server
+      // For now, we'll just show a success message
+      alert("Listing created successfully! It will be visible to the community soon.");
+      onClose();
+
+      // Reset form
+      setTitle("");
+      setDescription("");
+      setCategory("");
+      setCompensation("");
+      setLocation("");
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: "rgba(0,0,0,0.5)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 2000,
+      padding: "1rem"
+    }}>
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        style={{
+          background: "white",
+          borderRadius: "20px",
+          width: "100%",
+          maxWidth: "600px",
+          maxHeight: "90vh",
+          overflow: "auto",
+          padding: "2rem"
+        }}
+      >
+        <h2 style={{ margin: "0 0 1.5rem 0", color: "#231a13" }}>Create New Listing</h2>
+
+        <div style={{ display: "grid", gap: "1.5rem" }}>
+          <div>
+            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold", color: "#231a13" }}>
+              Title *
+            </label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g., Garden Help Needed"
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                border: "2px solid #E8DCC0",
+                borderRadius: "8px",
+                fontSize: "1rem",
+                outline: "none"
+              }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold", color: "#231a13" }}>
+              Category *
+            </label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                border: "2px solid #E8DCC0",
+                borderRadius: "8px",
+                fontSize: "1rem",
+                outline: "none"
+              }}
+            >
+              <option value="">Select a category</option>
+              {categories.map(cat => (
+                <option key={cat.value} value={cat.value}>{cat.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold", color: "#231a13" }}>
+              Description *
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Describe what you're offering or what help you need..."
+              rows={4}
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                border: "2px solid #E8DCC0",
+                borderRadius: "8px",
+                fontSize: "1rem",
+                outline: "none",
+                resize: "vertical"
+              }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold", color: "#231a13" }}>
+              Location *
+            </label>
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="e.g., Downtown, Westside"
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                border: "2px solid #E8DCC0",
+                borderRadius: "8px",
+                fontSize: "1rem",
+                outline: "none"
+              }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold", color: "#231a13" }}>
+              Compensation *
+            </label>
+            <input
+              type="text"
+              value={compensation}
+              onChange={(e) => setCompensation(e.target.value)}
+              placeholder="e.g., $20/hour, barter, free"
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                border: "2px solid #E8DCC0",
+                borderRadius: "8px",
+                fontSize: "1rem",
+                outline: "none"
+              }}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: "1rem", justifyContent: "flex-end", marginTop: "2rem" }}>
+          <button
+            onClick={onClose}
+            style={{
+              padding: "0.75rem 1.5rem",
+              background: "none",
+              color: "#666",
+              border: "2px solid #E8DCC0",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "1rem"
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={submitListing}
+            disabled={!title.trim() || !description.trim() || !category || !compensation.trim() || !location.trim()}
+            style={{
+              padding: "0.75rem 1.5rem",
+              background: (!title.trim() || !description.trim() || !category || !compensation.trim() || !location.trim()) ? "#ccc" : "#8B7355",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: (!title.trim() || !description.trim() || !category || !compensation.trim() || !location.trim()) ? "not-allowed" : "pointer",
+              fontSize: "1rem",
+              fontWeight: "bold"
+            }}
+          >
+            Create Listing
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+// Create Event Modal Component
+const CreateEventModal = ({ isOpen, onClose, currentUser }) => {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [location, setLocation] = useState("");
+  const [category, setCategory] = useState("");
+
+  const categories = [
+    { value: "gardening", label: "Gardening" },
+    { value: "education", label: "Education" },
+    { value: "social", label: "Social" },
+    { value: "maintenance", label: "Maintenance" },
+    { value: "other", label: "Other" }
+  ];
+
+  const submitEvent = () => {
+    if (title.trim() && description.trim() && date && time && location.trim() && category) {
+      const newEvent = {
+        id: Date.now(),
+        title: title.trim(),
+        date,
+        time,
+        location: location.trim(),
+        description: description.trim(),
+        curator: currentUser.preferredName || currentUser.username,
+        curatorId: currentUser.id,
+        attendees: [`${currentUser.preferredName || currentUser.username}`],
+        category,
+        lastActive: "Featured"
+      };
+
+      // In a real app, this would be sent to a server
+      // For now, we'll just show a success message
+      alert("Event created successfully! It will be visible to the community soon.");
+      onClose();
+
+      // Reset form
+      setTitle("");
+      setDescription("");
+      setDate("");
+      setTime("");
+      setLocation("");
+      setCategory("");
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: "rgba(0,0,0,0.5)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 2000,
+      padding: "1rem"
+    }}>
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        style={{
+          background: "white",
+          borderRadius: "20px",
+          width: "100%",
+          maxWidth: "600px",
+          maxHeight: "90vh",
+          overflow: "auto",
+          padding: "2rem"
+        }}
+      >
+        <h2 style={{ margin: "0 0 1.5rem 0", color: "#231a13" }}>Create New Event</h2>
+
+        <div style={{ display: "grid", gap: "1.5rem" }}>
+          <div>
+            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold", color: "#231a13" }}>
+              Event Title *
+            </label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="e.g., Community Gardening Day"
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                border: "2px solid #E8DCC0",
+                borderRadius: "8px",
+                fontSize: "1rem",
+                outline: "none"
+              }}
+            />
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+            <div>
+              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold", color: "#231a13" }}>
+                Date *
+              </label>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "2px solid #E8DCC0",
+                  borderRadius: "8px",
+                  fontSize: "1rem",
+                  outline: "none"
+                }}
+              />
+            </div>
+            <div>
+              <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold", color: "#231a13" }}>
+                Time *
+              </label>
+              <input
+                type="text"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+                placeholder="e.g., 09:00 - 17:00"
+                style={{
+                  width: "100%",
+                  padding: "0.75rem",
+                  border: "2px solid #E8DCC0",
+                  borderRadius: "8px",
+                  fontSize: "1rem",
+                  outline: "none"
+                }}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold", color: "#231a13" }}>
+              Location *
+            </label>
+            <input
+              type="text"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              placeholder="e.g., Riverside Park, pavilion area"
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                border: "2px solid #E8DCC0",
+                borderRadius: "8px",
+                fontSize: "1rem",
+                outline: "none"
+              }}
+            />
+          </div>
+
+          <div>
+            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold", color: "#231a13" }}>
+              Category *
+            </label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                border: "2px solid #E8DCC0",
+                borderRadius: "8px",
+                fontSize: "1rem",
+                outline: "none"
+              }}
+            >
+              <option value="">Select a category</option>
+              {categories.map(cat => (
+                <option key={cat.value} value={cat.value}>{cat.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold", color: "#231a13" }}>
+              Description *
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Describe the event and what participants should bring..."
+              rows={4}
+              style={{
+                width: "100%",
+                padding: "0.75rem",
+                border: "2px solid #E8DCC0",
+                borderRadius: "8px",
+                fontSize: "1rem",
+                outline: "none",
+                resize: "vertical"
+              }}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: "1rem", justifyContent: "flex-end", marginTop: "2rem" }}>
+          <button
+            onClick={onClose}
+            style={{
+              padding: "0.75rem 1.5rem",
+              background: "none",
+              color: "#666",
+              border: "2px solid #E8DCC0",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "1rem"
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={submitEvent}
+            disabled={!title.trim() || !description.trim() || !date || !time || !location.trim() || !category}
+            style={{
+              padding: "0.75rem 1.5rem",
+              background: (!title.trim() || !description.trim() || !date || !time || !location.trim() || !category) ? "#ccc" : "#8B7355",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: (!title.trim() || !description.trim() || !date || !time || !location.trim() || !category) ? "not-allowed" : "pointer",
+              fontSize: "1rem",
+              fontWeight: "bold"
+            }}
+          >
+            Create Event
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
+// Reporting Modal Component
+const ReportingModal = ({ isOpen, onClose, targetUser, currentUser }) => {
+  const [reason, setReason] = useState("");
+  const [description, setDescription] = useState("");
+
+  if (!targetUser || !currentUser) return null;
+
+  const reportReasons = [
+    "Inappropriate content",
+    "Harassment or bullying",
+    "Spam or misleading information",
+    "Violation of community guidelines",
+    "Fraudulent activity",
+    "Other"
+  ];
+
+  const submitReport = () => {
+    if (reason && description.trim()) {
+      const report = {
+        id: Date.now(),
+        reporterId: currentUser.id,
+        reportedUserId: targetUser.id,
+        reason,
+        description: description.trim(),
+        timestamp: new Date().toISOString(),
+        status: "pending"
+      };
+
+      // Save report to localStorage (in a real app, this would go to a server)
+      const existingReports = JSON.parse(localStorage.getItem('user_reports') || '[]');
+      existingReports.push(report);
+      localStorage.setItem('user_reports', JSON.stringify(existingReports));
+
+      alert("Report submitted successfully. Our team will review it shortly.");
+      onClose();
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: "rgba(0,0,0,0.5)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 2000,
+      padding: "1rem"
+    }}>
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        style={{
+          background: "white",
+          borderRadius: "20px",
+          width: "100%",
+          maxWidth: "500px",
+          padding: "2rem"
+        }}
+      >
+        <h2 style={{ margin: "0 0 1rem 0", color: "#231a13" }}>Report User</h2>
+        <p style={{ margin: "0 0 1.5rem 0", color: "#666", fontSize: "0.9rem" }}>
+          Reporting: {targetUser.name || targetUser.username}
+        </p>
+
+        <div style={{ marginBottom: "1.5rem" }}>
+          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold", color: "#231a13" }}>
+            Reason for report *
+          </label>
+          <select
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "0.75rem",
+              border: "2px solid #E8DCC0",
+              borderRadius: "8px",
+              fontSize: "1rem",
+              outline: "none"
+            }}
+          >
+            <option value="">Select a reason</option>
+            {reportReasons.map(r => (
+              <option key={r} value={r}>{r}</option>
+            ))}
+          </select>
+        </div>
+
+        <div style={{ marginBottom: "2rem" }}>
+          <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "bold", color: "#231a13" }}>
+            Description *
+          </label>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Please provide details about the issue..."
+            rows={4}
+            style={{
+              width: "100%",
+              padding: "0.75rem",
+              border: "2px solid #E8DCC0",
+              borderRadius: "8px",
+              fontSize: "1rem",
+              outline: "none",
+              resize: "vertical"
+            }}
+          />
+        </div>
+
+        <div style={{ display: "flex", gap: "1rem", justifyContent: "flex-end" }}>
+          <button
+            onClick={onClose}
+            style={{
+              padding: "0.75rem 1.5rem",
+              background: "none",
+              color: "#666",
+              border: "2px solid #E8DCC0",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontSize: "1rem"
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={submitReport}
+            disabled={!reason || !description.trim()}
+            style={{
+              padding: "0.75rem 1.5rem",
+              background: (!reason || !description.trim()) ? "#ccc" : "#8B7355",
+              color: "white",
+              border: "none",
+              borderRadius: "8px",
+              cursor: (!reason || !description.trim()) ? "not-allowed" : "pointer",
+              fontSize: "1rem",
+              fontWeight: "bold"
+            }}
+          >
+            Submit Report
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+};
+
 // Main App Component
 function App() {
-  const [user, setUser] = useState(null);
-  const [page, setPage] = useState("dashboard");
+  // Initialize state from localStorage if available
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('paros_user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
+  const [page, setPage] = useState(() => {
+    const savedPage = localStorage.getItem('paros_page');
+    return savedPage || "dashboard";
+  });
+
+  // Messaging and reporting state
+  const [messagingModal, setMessagingModal] = useState({ isOpen: false, recipient: null });
+  const [reportingModal, setReportingModal] = useState({ isOpen: false, targetUser: null });
+  const [createListingModal, setCreateListingModal] = useState({ isOpen: false });
+  const [createEventModal, setCreateEventModal] = useState({ isOpen: false });
 
   const isDarkMode = false;
 
+  // Save user and page state to localStorage whenever they change
+  React.useEffect(() => {
+    if (user) {
+      localStorage.setItem('paros_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('paros_user');
+    }
+  }, [user]);
+
+  React.useEffect(() => {
+    localStorage.setItem('paros_page', page);
+  }, [page]);
+
   function onLoginSuccess(userData) {
-    setUser(userData);
+    // Set logged-in user as user 0 (demo)
+    setUser({
+      id: 0,
+      username: "demo",
+      preferredName: "Demo User",
+      country: "Netherlands",
+      province: "North Holland",
+      city: "Amsterdam",
+      pinCode: "1000",
+      aboutMe: "Demo user for testing the Paros community platform.",
+      skills: ["Testing", "Demo"],
+      customSkills: [],
+      lendingItems: ["Demo Items"],
+      customLending: [],
+      barterPreferences: "Open to demo exchanges.",
+      profileImages: [null, null, null, null, null, null],
+      trustScore: 5.0,
+      joinDate: new Date().toISOString().split('T')[0]
+    });
     setPage("profile");
   }
 
   function handleLogout() {
     setUser(null);
     setPage("dashboard");
+    // Clear localStorage on logout
+    localStorage.removeItem('paros_user');
+    localStorage.removeItem('paros_page');
   }
 
   const navigateTo = (pageName) => setPage(pageName);
+
+  const openMessaging = (recipient) => {
+    setMessagingModal({ isOpen: true, recipient });
+  };
+
+  const closeMessaging = () => {
+    setMessagingModal({ isOpen: false, recipient: null });
+  };
+
+  const openReporting = (targetUser) => {
+    setReportingModal({ isOpen: true, targetUser });
+  };
+
+  const closeReporting = () => {
+    setReportingModal({ isOpen: false, targetUser: null });
+  };
+
+  const openCreateListing = () => {
+    setCreateListingModal({ isOpen: true });
+  };
+
+  const closeCreateListing = () => {
+    setCreateListingModal({ isOpen: false });
+  };
+
+  const openCreateEvent = () => {
+    setCreateEventModal({ isOpen: true });
+  };
+
+  const closeCreateEvent = () => {
+    setCreateEventModal({ isOpen: false });
+  };
 
   if (!user) {
     return <LandingPage onLoginSuccess={onLoginSuccess} />;
@@ -1763,11 +3159,27 @@ function App() {
 
       <div style={{ overflowX: "hidden", marginTop: "120px" }}>
         {page === "dashboard" && (
-          <Dashboard user={user} isDarkMode={isDarkMode} onNavigate={navigateTo} listings={dummyListings} events={dummyEvents} />
+          <Dashboard
+            user={user}
+            isDarkMode={isDarkMode}
+            onNavigate={navigateTo}
+            listings={dummyListings}
+            events={dummyEvents}
+            onMessage={openMessaging}
+            onReport={openReporting}
+            users={dummyUsers}
+          />
+        )}
+        {page === "messages" && (
+          <MessagesPage
+            currentUser={user}
+            users={dummyUsers}
+            onMessage={openMessaging}
+          />
         )}
         {page === "profile" && <UserProfile user={user} setUser={setUser} isDarkMode={isDarkMode} />}
-        {page === "browse" && <SwipeableListings listings={dummyListings} isDarkMode={isDarkMode} />}
-        {page === "events" && <Events events={dummyEvents} isDarkMode={isDarkMode} />}
+        {page === "browse" && <SwipeableListings listings={dummyListings} isDarkMode={isDarkMode} onCreateListing={openCreateListing} />}
+        {page === "events" && <Events events={dummyEvents} isDarkMode={isDarkMode} onCreateEvent={openCreateEvent} />}
         {page === "create" && (
           <div style={{ textAlign: "center", padding: "4rem" }}>
             <h2>Create New Masterpiece Coming Soon</h2>
@@ -1777,6 +3189,37 @@ function App() {
       </div>
 
       <Footer />
+
+      {/* Messaging Modal */}
+      <MessagingModal
+        isOpen={messagingModal.isOpen}
+        onClose={closeMessaging}
+        recipient={messagingModal.recipient}
+        currentUser={user}
+        users={dummyUsers}
+      />
+
+      {/* Reporting Modal */}
+      <ReportingModal
+        isOpen={reportingModal.isOpen}
+        onClose={closeReporting}
+        targetUser={reportingModal.targetUser}
+        currentUser={user}
+      />
+
+      {/* Create Listing Modal */}
+      <CreateListingModal
+        isOpen={createListingModal.isOpen}
+        onClose={closeCreateListing}
+        currentUser={user}
+      />
+
+      {/* Create Event Modal */}
+      <CreateEventModal
+        isOpen={createEventModal.isOpen}
+        onClose={closeCreateEvent}
+        currentUser={user}
+      />
     </>
   );
 }

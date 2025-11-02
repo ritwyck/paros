@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 
-const Events = ({ events, isDarkMode }) => {
+const Events = ({ events, isDarkMode, onCreateEvent }) => {
   const [isMobile, setIsMobile] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
@@ -46,7 +46,7 @@ const Events = ({ events, isDarkMode }) => {
         <p style={{
           fontSize: isMobile ? "1rem" : "1.2rem",
           color: "#666",
-          margin: 0,
+          margin: "0 0 1rem 0",
           maxWidth: "600px",
           margin: "0 auto",
           lineHeight: 1.6,
@@ -54,6 +54,27 @@ const Events = ({ events, isDarkMode }) => {
         }}>
           Join local gatherings, workshops, and collaborative activities that bring our community together
         </p>
+
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={onCreateEvent}
+          style={{
+            background: "#8B7355",
+            color: "white",
+            border: "none",
+            borderRadius: "12px",
+            padding: "1rem 2rem",
+            fontSize: "1.1rem",
+            fontWeight: 600,
+            cursor: "pointer",
+            fontFamily: "'Inter', sans-serif",
+            transition: "all 0.3s ease",
+            boxShadow: "0 4px 16px rgba(139, 115, 85, 0.3)"
+          }}
+        >
+          + Create New Event
+        </motion.button>
       </motion.div>
 
       {/* Events Grid */}
