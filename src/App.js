@@ -5,20 +5,17 @@ import UserProfile from "./components/UserProfile";
 import { MapContainer, TileLayer } from "react-leaflet";
 import L from "leaflet";
 
-import "./index.css"; // Your global CSS with new palette and fonts
+import "./index.css";
 
 // Fix Leaflet icon paths
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
 
-// **[COMMUNITY HELP SYSTEM]** Complete Suite
+// Community Help System Data
 const dummyListings = [
   {
     id: 1,
@@ -52,39 +49,6 @@ const dummyListings = [
     helper: "David K.",
     lastActive: "1 day ago",
     compensation: "$10/day"
-  },
-  {
-    id: 4,
-    title: "Spanish Conversation Partner",
-    category: "skill",
-    type: "practice",
-    description: "Looking for someone to practice Spanish conversation with. Native speaker available for free language exchange.",
-    location: "Downtown",
-    helper: "Sara M.",
-    lastActive: "3 hours ago",
-    compensation: "Free exchange"
-  },
-  {
-    id: 5,
-    title: "Moving Help",
-    category: "service",
-    type: "help",
-    description: "Need strong people to help move furniture this Saturday. Pizza and beer provided!",
-    location: "Northside",
-    helper: "Carlos L.",
-    lastActive: "6 hours ago",
-    compensation: "Pizza & beer"
-  },
-  {
-    id: 6,
-    title: "Bike Repair Service",
-    category: "skill",
-    type: "repair",
-    description: "Professional bike mechanic available for repairs and maintenance. $15/hour.",
-    location: "Southside",
-    helper: "Mike T.",
-    lastActive: "1 day ago",
-    compensation: "$15/hour"
   }
 ];
 
@@ -95,48 +59,20 @@ const dummyEvents = [
     date: "2025-11-05",
     time: "09:00 - 17:00",
     location: "Riverside Park, pavilion area",
-    description: "Join our community garden transformation! Bring gardening tools, gloves, and water bottles. We'll be planting fall vegetables and wildflowers. Ran Hiroshi leads this collaborative artwork.",
+    description: "Join our community garden transformation! Bring gardening tools, gloves, and water bottles.",
     curator: "Community Council",
     attendees: ["Maria G.", "Carlos L.", "Sophie W.", "+12 more"],
     category: "gardening",
-    curator: "Ran H.",
     lastActive: "Featured"
-  },
-  {
-    id: 2,
-    title: "Open Mic Night",
-    date: "2025-11-12",
-    time: "20:00 - 22:00",
-    location: "The Coffee House, downtown",
-    description: "Monthly showcase of local musical and spoken word creations. Featured ‘poetry without fear’ session hosted by acclaimed poet Lena Vasquez. Perfect for your hidden talents.",
-    curator: "Lena V.",
-    attendees: ["Jasmine T.", "Miguel R.", "Tomi O.", "+8 more"],
-    category: "music",
-    category: "performance"
-  },
-  {
-    id: 3,
-    title: "Tool Library Workshop",
-    date: "2025-11-18",
-    time: "14:00 - 16:00",
-    location: "Maker Space, Industrial Park",
-    description: "Introduction to our neighborhood tool library. Learn about woodworking fundamentals with hand and power tools. Perfect for your DIY masterpieces.",
-    curator: "The Maker Collective",
-    attendees: ["David K.", "Rachel N.", "Carlos L.", "+5 more"],
-    category: "workshop",
-    lastActive: "New"
   }
 ];
 
-// **[GALLERY ARTIST DESIGN SYSTEM]**
+// Global Map Background Component
 const GlobalMapBackground = ({ isDarkMode, user }) => {
   const mapRef = React.useRef();
   const { scrollYProgress } = useScroll();
 
-  // Fixed coordinates for Pune, Maharashtra, India
-  const getUserCoordinates = () => {
-    return [18.5204, 73.8567]; // Pune coordinates
-  };
+  const getUserCoordinates = () => [18.5204, 73.8567];
 
   const [userLat, userLng] = getUserCoordinates();
 
@@ -144,7 +80,7 @@ const GlobalMapBackground = ({ isDarkMode, user }) => {
     const unsubscribe = scrollYProgress.on("change", (progress) => {
       if (mapRef.current) {
         const startLat = userLat;
-        const endLat = userLat - 0.13; // Similar range as original
+        const endLat = userLat - 0.13;
         const lat = startLat + (endLat - startLat) * progress;
         const lng = userLng;
         try {
@@ -201,297 +137,766 @@ const GlobalMapBackground = ({ isDarkMode, user }) => {
   );
 };
 
-const ThemeToggleButton = ({ isDarkMode, onToggle }) => (
-  <motion.button
-    whileHover={{
-      backgroundColor: isDarkMode ? "#000000" : "#E8DCC0",
-      color: isDarkMode ? "#E8DCC0" : "#231a13",
-      border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
-      transition: { duration: 0.3 }
-    }}
-    whileTap={{ scale: 0.95 }}
-    onClick={onToggle}
-    style={{
-      backgroundColor: isDarkMode ? "#E8DCC0" : "#231a13",
-      color: isDarkMode ? "#231a13" : "#E8DCC0",
-      border: `2px solid ${isDarkMode ? "#E8DCC0" : "#231a13"}`,
-      borderRadius: 0,
-      padding: "0.8rem 1.5rem",
-      fontSize: "1rem",
-      fontWeight: 600,
-      cursor: "pointer",
-      fontFamily: "'Inter', sans-serif",
-      transition: "all 0.3s ease",
-    }}
-  >
-    {isDarkMode ? "Light" : "Dark"}
-  </motion.button>
-);
-
-// **[ART GALLERY DASHBOARD]**
+// Natural Luxury Dashboard Component
 const Dashboard = ({ user, isDarkMode, onNavigate, listings, events }) => (
-  <div style={{ position: "relative", zIndex: 10, padding: "4rem 1rem 6rem" }}>
-    {/* Profile Overview */}
+  <div style={{
+    position: "relative",
+    zIndex: 10,
+    padding: "3rem 2rem 5rem",
+    minHeight: "100vh",
+    fontFamily: "'Inter', sans-serif"
+  }}>
+    {/* Transparent Welcome Section - Map shows through */}
     <motion.div
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
       style={{
-        maxWidth: 1000,
-        margin: "0 auto 4rem",
-        background: isDarkMode ? "rgba(0, 0, 0, 0.95)" : "rgba(251, 248, 241, 0.95)",
-        backdropFilter: "blur(20px)",
-        borderRadius: 0,
-        padding: "3rem",
-        border: `1px solid ${isDarkMode ? "rgba(129, 115, 105, 0.4)" : "rgba(249, 245, 237, 0.4)"}`,
+        textAlign: "center",
+        marginBottom: "4rem",
+        padding: "3rem 0"
       }}
     >
-      <h1 style={{
-        fontSize: "3rem",
-        fontWeight: 400,
-        textAlign: "center",
-        marginBottom: "0.5rem",
-        color: isDarkMode ? "#E8DCC0" : "#231a13",
-        textTransform: "uppercase",
-        letterSpacing: "0.1em"
-      }}>
-        Welcome Back, {user.username || "Neighbor"}
-      </h1>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "2rem", marginTop: "3rem" }}>
-        {/* Quick Profile Stats */}
-        <div style={{
-          background: isDarkMode ? "rgba(0, 0, 0, 0.9)" : "rgba(251, 248, 241, 0.9)",
-          padding: "2rem",
-          borderRadius: 0,
-          border: `1px solid ${isDarkMode ? "rgba(152, 109, 106, 0.3)" : "rgba(249, 245, 237, 0.5)"}`,
+      <motion.div
+        initial={{ scale: 0.95 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        style={{
+          display: "inline-block",
+          padding: "2rem 3rem",
+          background: "rgba(232, 220, 192, 0.9)",
+          borderRadius: "16px",
+          boxShadow: "0 12px 40px rgba(232, 220, 192, 0.25)",
+          border: "1px solid rgba(232, 220, 192, 0.3)",
+          backdropFilter: "blur(10px)"
+        }}
+      >
+        <h1 style={{
+          fontSize: "2.5rem",
+          fontWeight: 500,
+          color: "#231a13",
+          margin: 0,
+          letterSpacing: "0.02em",
+          textTransform: "uppercase",
+          fontFamily: "'Inter', sans-serif"
         }}>
-          <h3 style={{ color: isDarkMode ? "#F5F1E7" : "#231a13", marginBottom: "1rem", fontSize: "1.5rem" }}>
-            Your Community Activity
-          </h3>
-          <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", color: isDarkMode ? "#F5F1E7" : "#231a13" }}>
-              <span>Help Offered</span>
-              <strong>{listings.filter(l => l.helper === user.username || l.helper?.split('.')[0] === user.username?.charAt(0)).length}</strong>
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", color: isDarkMode ? "#F5F1E7" : "#231a13" }}>
-              <span>Help Received</span>
-              <strong>{Math.floor(Math.random() * 5) + 1}</strong>
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", color: isDarkMode ? "#F5F1E7" : "#231a13" }}>
-              <span>Community Rating</span>
-              <strong>5.0</strong>
-            </div>
-          </div>
-        </div>
+          Welcome Back, {user.username || "Neighbor"}
+        </h1>
+      </motion.div>
 
-        {/* Quick Actions */}
-        <div style={{
-          background: isDarkMode ? "rgba(0, 0, 0, 0.9)" : "rgba(251, 248, 241, 0.9)",
-          padding: "2rem",
-          borderRadius: 0,
-          border: `1px solid ${isDarkMode ? "rgba(152, 109, 106, 0.3)" : "rgba(249, 245, 237, 0.5)"}`,
-        }}>
-          <h3 style={{ color: isDarkMode ? "#F5F1E7" : "#231a13", marginBottom: "1.5rem", fontSize: "1.5rem" }}>
-            Community Actions
-          </h3>
-          <div style={{ display: "grid", gap: "0.8rem" }}>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              onClick={() => onNavigate("browse")}
-              style={{
-                backgroundColor: isDarkMode ? "#E8DCC0" : "#231a13",
-                color: isDarkMode ? "#231a13" : "#E8DCC0",
-                border: "none",
-                borderRadius: 0,
-                padding: "0.9rem 1.5rem",
-                cursor: "pointer",
-                fontWeight: 500,
-                fontFamily: "'Inter', sans-serif",
-              }}
-            >
-              Browse Help
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              onClick={() => onNavigate("profile")}
-              style={{
-                backgroundColor: isDarkMode ? "#E8DCC0" : "#231a13",
-                color: isDarkMode ? "#231a13" : "#E8DCC0",
-                border: `1px solid ${isDarkMode ? "#231a13" : "#E8DCC0"}`,
-                borderRadius: 0,
-                padding: "0.9rem 1.5rem",
-                cursor: "pointer",
-                fontWeight: 500,
-                fontFamily: "'Inter', sans-serif",
-              }}
-            >
-              Edit Profile
-            </motion.button>
-          </div>
-        </div>
-      </div>
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        style={{
+          fontSize: "1.2rem",
+          color: "#231a13",
+          margin: "2rem auto 0",
+          fontWeight: 400,
+          maxWidth: "500px",
+          lineHeight: 1.6,
+          fontFamily: "'Inter', sans-serif",
+          textShadow: "0 1px 2px rgba(255,255,255,0.8)"
+        }}
+      >
+        Discover meaningful connections in your community
+      </motion.p>
     </motion.div>
 
-    {/* Recent Activity */}
+    {/* Luxury Activity Cards */}
+    <div style={{
+      maxWidth: "1400px",
+      margin: "0 auto",
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(380px, 1fr))",
+      gap: "3rem",
+      padding: "0 2rem"
+    }}>
+      {/* Community Impact Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.1 }}
+        whileHover={{
+          y: -8,
+          boxShadow: "0 25px 50px rgba(0,0,0,0.15)",
+          transition: { duration: 0.3, ease: "easeOut" }
+        }}
+        style={{
+          background: "white",
+          borderRadius: "20px",
+          padding: "3rem",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
+          border: "1px solid rgba(249, 245, 237, 0.6)",
+          position: "relative",
+          overflow: "hidden"
+        }}
+      >
+        <div style={{
+          position: "absolute",
+          top: "-50px",
+          right: "-50px",
+          width: "150px",
+          height: "150px",
+          background: "radial-gradient(circle, rgba(232,220,192,0.08) 0%, transparent 70%)",
+          borderRadius: "50%"
+        }} />
+        <div style={{
+          position: "absolute",
+          bottom: "-30px",
+          left: "-30px",
+          width: "100px",
+          height: "100px",
+          background: "radial-gradient(circle, rgba(232,220,192,0.06) 0%, transparent 70%)",
+          borderRadius: "50%"
+        }} />
+
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          marginBottom: "2rem",
+          position: "relative",
+          zIndex: 1
+        }}>
+          <div style={{
+            width: "56px",
+            height: "56px",
+            borderRadius: "18px",
+            background: "linear-gradient(135deg, #E8DCC0 0%, #D4C4A8 100%)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: "1.5rem",
+            boxShadow: "0 4px 16px rgba(232, 220, 192, 0.3)",
+            border: "2px solid rgba(255,255,255,0.8)"
+          }}>
+            <div style={{
+              width: "24px",
+              height: "24px",
+              background: "#231a13",
+              borderRadius: "2px",
+              position: "relative"
+            }}>
+              <div style={{
+                position: "absolute",
+                width: "12px",
+                height: "2px",
+                background: "#E8DCC0",
+                top: "6px",
+                left: "6px"
+              }} />
+              <div style={{
+                position: "absolute",
+                width: "2px",
+                height: "12px",
+                background: "#E8DCC0",
+                top: "6px",
+                right: "6px"
+              }} />
+            </div>
+          </div>
+          <div>
+            <h3 style={{
+              fontSize: "1.6rem",
+              fontWeight: 600,
+              color: "#231a13",
+              margin: "0 0 0.5rem 0",
+              fontFamily: "'Inter', sans-serif",
+              letterSpacing: "0.01em"
+            }}>
+              Your Community Impact
+            </h3>
+            <p style={{
+              fontSize: "1rem",
+              color: "#666",
+              margin: 0,
+              fontFamily: "'Inter', sans-serif"
+            }}>
+              Building stronger connections
+            </p>
+          </div>
+        </div>
+
+        <div style={{
+          display: "grid",
+          gap: "1.5rem",
+          position: "relative",
+          zIndex: 1
+        }}>
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "1.5rem",
+              background: "linear-gradient(135deg, rgba(232,220,192,0.1) 0%, rgba(232,220,192,0.05) 100%)",
+              borderRadius: "12px",
+              border: "1px solid rgba(232,220,192,0.2)",
+              transition: "all 0.3s ease"
+            }}
+          >
+            <span style={{
+              color: "#231a13",
+              fontWeight: 500,
+              fontSize: "1.1rem",
+              fontFamily: "'Inter', sans-serif"
+            }}>
+              Help Offered
+            </span>
+            <span style={{
+              fontSize: "1.4rem",
+              fontWeight: 700,
+              color: "#231a13",
+              fontFamily: "'Inter', sans-serif"
+            }}>
+              {listings.filter(l => l.helper === user.username || l.helper?.split('.')[0] === user.username?.charAt(0)).length}
+            </span>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "1.5rem",
+              background: "linear-gradient(135deg, rgba(232,220,192,0.1) 0%, rgba(232,220,192,0.05) 100%)",
+              borderRadius: "12px",
+              border: "1px solid rgba(232,220,192,0.2)",
+              transition: "all 0.3s ease"
+            }}
+          >
+            <span style={{
+              color: "#231a13",
+              fontWeight: 500,
+              fontSize: "1.1rem",
+              fontFamily: "'Inter', sans-serif"
+            }}>
+              Help Received
+            </span>
+            <span style={{
+              fontSize: "1.4rem",
+              fontWeight: 700,
+              color: "#231a13",
+              fontFamily: "'Inter', sans-serif"
+            }}>
+              {Math.floor(Math.random() * 5) + 1}
+            </span>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "1.5rem",
+              background: "linear-gradient(135deg, #E8DCC0 0%, #D4C4A8 100%)",
+              borderRadius: "12px",
+              border: "1px solid rgba(232,220,192,0.3)",
+              boxShadow: "0 4px 16px rgba(232, 220, 192, 0.2)",
+              transition: "all 0.3s ease"
+            }}
+          >
+            <span style={{
+              color: "#231a13",
+              fontWeight: 500,
+              fontSize: "1.1rem",
+              fontFamily: "'Inter', sans-serif"
+            }}>
+              Community Trust
+            </span>
+            <span style={{
+              fontSize: "1.4rem",
+              fontWeight: 700,
+              color: "#231a13",
+              fontFamily: "'Inter', sans-serif"
+            }}>
+              5.0
+            </span>
+          </motion.div>
+        </div>
+      </motion.div>
+
+      {/* Elegant Actions Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.2 }}
+        whileHover={{
+          y: -8,
+          boxShadow: "0 25px 50px rgba(0,0,0,0.15)",
+          transition: { duration: 0.3, ease: "easeOut" }
+        }}
+        style={{
+          background: "white",
+          borderRadius: "20px",
+          padding: "3rem",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.08)",
+          border: "1px solid rgba(249, 245, 237, 0.6)",
+          position: "relative",
+          overflow: "hidden"
+        }}
+      >
+        <div style={{
+          position: "absolute",
+          top: "-40px",
+          left: "-40px",
+          width: "120px",
+          height: "120px",
+          background: "radial-gradient(circle, rgba(102,126,234,0.06) 0%, transparent 70%)",
+          borderRadius: "50%"
+        }} />
+
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          marginBottom: "2rem",
+          position: "relative",
+          zIndex: 1
+        }}>
+          <div style={{
+            width: "56px",
+            height: "56px",
+            borderRadius: "18px",
+            background: "#8B7355",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginRight: "1.5rem",
+            boxShadow: "0 4px 16px rgba(139, 115, 85, 0.3)",
+            border: "2px solid rgba(255,255,255,0.8)"
+          }}>
+            <div style={{
+              width: "20px",
+              height: "20px",
+              border: "2px solid white",
+              borderRadius: "2px",
+              position: "relative"
+            }}>
+              <div style={{
+                position: "absolute",
+                width: "8px",
+                height: "2px",
+                background: "white",
+                top: "7px",
+                left: "4px"
+              }} />
+              <div style={{
+                position: "absolute",
+                width: "2px",
+                height: "8px",
+                background: "white",
+                top: "4px",
+                right: "4px"
+              }} />
+            </div>
+          </div>
+          <div>
+            <h3 style={{
+              fontSize: "1.6rem",
+              fontWeight: 600,
+              color: "#231a13",
+              margin: "0 0 0.5rem 0",
+              fontFamily: "'Inter', sans-serif",
+              letterSpacing: "0.01em"
+            }}>
+              Quick Actions
+            </h3>
+            <p style={{
+              fontSize: "1rem",
+              color: "#666",
+              margin: 0,
+              fontFamily: "'Inter', sans-serif"
+            }}>
+              Explore your community
+            </p>
+          </div>
+        </div>
+
+        <div style={{
+          display: "grid",
+          gap: "1rem",
+          position: "relative",
+          zIndex: 1
+        }}>
+          <motion.button
+            whileHover={{
+              scale: 1.03,
+              boxShadow: "0 8px 25px rgba(139, 115, 85, 0.4)"
+            }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => onNavigate("browse")}
+            style={{
+              background: "#8B7355",
+              color: "white",
+              border: "none",
+              borderRadius: "12px",
+              padding: "1.2rem 2rem",
+              cursor: "pointer",
+              fontWeight: 600,
+              fontSize: "1.1rem",
+              fontFamily: "'Inter', sans-serif",
+              boxShadow: "0 4px 16px rgba(139, 115, 85, 0.3)",
+              transition: "all 0.3s ease"
+            }}
+          >
+            Browse Community Help
+          </motion.button>
+
+          <motion.button
+            whileHover={{
+              scale: 1.03,
+              backgroundColor: "#8B7355",
+              color: "white"
+            }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => onNavigate("profile")}
+            style={{
+              background: "white",
+              color: "#8B7355",
+              border: "2px solid #8B7355",
+              borderRadius: "12px",
+              padding: "1.2rem 2rem",
+              cursor: "pointer",
+              fontWeight: 600,
+              fontSize: "1.1rem",
+              fontFamily: "'Inter', sans-serif",
+              transition: "all 0.3s ease",
+              boxShadow: "0 2px 8px rgba(139, 115, 85, 0.1)"
+            }}
+          >
+            Update Your Profile
+          </motion.button>
+        </div>
+      </motion.div>
+    </div>
+
+    {/* Luxury Community Showcase */}
     <motion.div
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, delay: 0.2 }}
+      transition={{ duration: 0.8, delay: 0.5 }}
       style={{
-        maxWidth: 1000,
-        margin: "0 auto",
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(480px, 1fr))",
-        gap: "2rem",
+        maxWidth: "1400px",
+        margin: "5rem auto 0",
+        padding: "0 2rem"
       }}
     >
-      {/* Trending Listings */}
-      <div style={{
-        background: isDarkMode ? "rgba(0, 0, 0, 0.95)" : "rgba(251, 248, 241, 0.95)",
-        backdropFilter: "blur(20px)",
-        borderRadius: 0,
-        padding: "2rem",
-        border: `1px solid ${isDarkMode ? "rgba(129, 115, 105, 0.4)" : "rgba(249, 245, 237, 0.4)"}`,
-      }}>
-        <h2 style={{
-          color: isDarkMode ? "#F5F1E7" : "#231a13",
-          marginBottom: "2rem",
-          fontSize: "1.8rem",
+      <motion.h2
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7 }}
+        style={{
+          fontSize: "2.2rem",
           fontWeight: 600,
-          letterSpacing: "0.05em"
-        }}>
-        Local Highlights
-        </h2>
-        {listings.slice(0, 3).map((listing, index) => (
-          <motion.div
-            key={listing.id}
+          color: "#231a13",
+          textAlign: "center",
+          marginBottom: "3rem",
+          fontFamily: "'Inter', sans-serif",
+          letterSpacing: "0.01em"
+        }}
+      >
+        Community Showcase
+      </motion.h2>
+
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
+        gap: "3rem"
+      }}>
+        {/* Local Opportunities */}
+        <div>
+          <motion.h3
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: index * 0.1 }}
+            transition={{ delay: 0.8 }}
             style={{
-              background: isDarkMode ? "rgba(0, 0, 0, 0.9)" : "rgba(251, 248, 241, 0.9)",
-              padding: "1.5rem",
-              marginBottom: "1rem",
-              borderRadius: 0,
-              border: `1px solid ${isDarkMode ? "rgba(152, 109, 106, 0.3)" : "rgba(249, 245, 237, 0.5)"}`,
-              cursor: "pointer"
+              fontSize: "1.5rem",
+              fontWeight: 600,
+              color: "#231a13",
+              marginBottom: "2rem",
+              fontFamily: "'Inter', sans-serif",
+              letterSpacing: "0.01em"
             }}
           >
-            <h4 style={{
-              margin: 0,
-              color: isDarkMode ? "#F5F1E7" : "#231a13",
-              fontSize: "1.2rem",
-              fontWeight: 600
-            }}>
-              {listing.title}
-            </h4>
-            <p style={{
-              margin: "0.5rem 0",
-              color: isDarkMode ? "#E8DCC0" : "#231a13",
-              fontSize: "0.9rem",
-              lineHeight: 1.4
-            }}>
-              {listing.description.substring(0, 100)}...
-            </p>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.5rem" }}>
-              <small style={{
-                color: isDarkMode ? "#E8DCC0" : "#231a13",
-                opacity: 0.7
-              }}>
-                By {listing.helper} • {listing.lastActive}
-              </small>
-              <span style={{
-                color: isDarkMode ? "#E8DCC0" : "#231a13",
-                fontWeight: 600,
-                fontSize: "0.9rem"
-              }}>
-                {listing.compensation}
-              </span>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+            Local Opportunities
+          </motion.h3>
+          {listings.slice(0, 2).map((listing, index) => (
+            <motion.div
+              key={listing.id}
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.9 + index * 0.1 }}
+              whileHover={{
+                scale: 1.02,
+                boxShadow: "0 12px 30px rgba(0,0,0,0.12)",
+                y: -2
+              }}
+              style={{
+                background: "white",
+                borderRadius: "16px",
+                padding: "2rem",
+                marginBottom: "1.5rem",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
+                border: "1px solid rgba(249, 245, 237, 0.6)",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+                position: "relative",
+                overflow: "hidden"
+              }}
+            >
+              <div style={{
+                position: "absolute",
+                top: 0,
+                right: 0,
+                width: "80px",
+                height: "80px",
+                background: "radial-gradient(circle, rgba(232,220,192,0.08) 0%, transparent 70%)",
+                borderRadius: "50%",
+                transform: "translate(30px, -30px)"
+              }} />
 
-      {/* Upcoming Events */}
-      <div style={{
-        background: isDarkMode ? "rgba(0, 0, 0, 0.95)" : "rgba(251, 248, 241, 0.95)",
-        backdropFilter: "blur(20px)",
-        borderRadius: 0,
-        padding: "2rem",
-        border: `1px solid ${isDarkMode ? "rgba(129, 115, 105, 0.4)" : "rgba(249, 245, 237, 0.4)"}`,
-      }}>
-        <h2 style={{
-          color: isDarkMode ? "#F5F1E7" : "#231a13",
-          marginBottom: "2rem",
-          fontSize: "1.8rem",
-          fontWeight: 600,
-          letterSpacing: "0.05em"
-        }}>
-          Community Events
-        </h2>
-        {events.slice(0, 3).map((event, index) => (
-          <motion.div
-            key={event.id}
+              <div style={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: "1.5rem",
+                position: "relative",
+                zIndex: 1
+              }}>
+                <div style={{
+                  width: "50px",
+                  height: "50px",
+                  borderRadius: "14px",
+                  background: "linear-gradient(135deg, #E8DCC0 0%, #D4C4A8 100%)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "1.4rem",
+                  flexShrink: 0,
+                  boxShadow: "0 3px 12px rgba(232, 220, 192, 0.3)",
+                  border: "2px solid rgba(255,255,255,0.8)"
+                }}>
+                  {listing.category === "service" ? "🛠" : listing.category === "skill" ? "🎨" : "📦"}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <h4 style={{
+                    margin: "0 0 0.75rem 0",
+                    color: "#231a13",
+                    fontSize: "1.2rem",
+                    fontWeight: 600,
+                    lineHeight: 1.3,
+                    fontFamily: "'Inter', sans-serif"
+                  }}>
+                    {listing.title}
+                  </h4>
+                  <p style={{
+                    margin: "0 0 1.5rem 0",
+                    color: "#666",
+                    fontSize: "1rem",
+                    lineHeight: 1.5,
+                    fontFamily: "'Inter', sans-serif"
+                  }}>
+                    {listing.description.substring(0, 90)}...
+                  </p>
+                  <div style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center"
+                  }}>
+                    <div style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem"
+                    }}>
+                      <div style={{
+                        width: "8px",
+                        height: "8px",
+                        borderRadius: "50%",
+                        background: "#E8DCC0"
+                      }} />
+                      <small style={{
+                        color: "#999",
+                        fontSize: "0.9rem",
+                        fontFamily: "'Inter', sans-serif"
+                      }}>
+                        {listing.helper} • {listing.lastActive}
+                      </small>
+                    </div>
+                    <span style={{
+                      background: "linear-gradient(135deg, #E8DCC0 0%, #D4C4A8 100%)",
+                      color: "#231a13",
+                      padding: "0.5rem 1rem",
+                      borderRadius: "20px",
+                      fontSize: "0.9rem",
+                      fontWeight: 600,
+                      fontFamily: "'Inter', sans-serif",
+                      boxShadow: "0 2px 8px rgba(232, 220, 192, 0.2)"
+                    }}>
+                      {listing.compensation}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Community Events */}
+        <div>
+          <motion.h3
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: index * 0.1 }}
+            transition={{ delay: 0.8 }}
             style={{
-              background: isDarkMode ? "rgba(0, 0, 0, 0.9)" : "rgba(251, 248, 241, 0.9)",
-              padding: "1.5rem",
-              marginBottom: "1rem",
-              borderRadius: 0,
-              border: `1px solid ${isDarkMode ? "rgba(152, 109, 106, 0.3)" : "rgba(249, 245, 237, 0.5)"}`,
-              cursor: "pointer"
+              fontSize: "1.5rem",
+              fontWeight: 600,
+              color: "#231a13",
+              marginBottom: "2rem",
+              fontFamily: "'Inter', sans-serif",
+              letterSpacing: "0.01em"
             }}
           >
-            <h4 style={{
-              margin: 0,
-              color: isDarkMode ? "#F5F1E7" : "#231a13",
-              fontSize: "1.2rem",
-              fontWeight: 600
-            }}>
-              {event.title}
-            </h4>
-            <p style={{
-              margin: "0.5rem 0",
-              color: isDarkMode ? "#E8DCC0" : "#231a13",
-              fontSize: "0.9rem",
-              lineHeight: 1.4
-            }}>
-              {event.date} • {event.time}
-            </p>
-            <small style={{
-              color: isDarkMode ? "#E8DCC0" : "#231a13",
-              opacity: 0.7
-            }}>
-              Curated by {event.curator} • {event.lastActive}
-            </small>
-          </motion.div>
-        ))}
+            Community Events
+          </motion.h3>
+          {events.slice(0, 2).map((event, index) => (
+            <motion.div
+              key={event.id}
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.9 + index * 0.1 }}
+              whileHover={{
+                scale: 1.02,
+                boxShadow: "0 12px 30px rgba(0,0,0,0.12)",
+                y: -2
+              }}
+              style={{
+                background: "white",
+                borderRadius: "16px",
+                padding: "2rem",
+                marginBottom: "1.5rem",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
+                border: "1px solid rgba(249, 245, 237, 0.6)",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+                position: "relative",
+                overflow: "hidden"
+              }}
+            >
+              <div style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "80px",
+                height: "80px",
+                background: "radial-gradient(circle, rgba(102,126,234,0.06) 0%, transparent 70%)",
+                borderRadius: "50%",
+                transform: "translate(-30px, -30px)"
+              }} />
+
+              <div style={{
+                display: "flex",
+                alignItems: "flex-start",
+                gap: "1.5rem",
+                position: "relative",
+                zIndex: 1
+              }}>
+              <div style={{
+                width: "50px",
+                height: "50px",
+                borderRadius: "14px",
+                background: "#8B7355",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "1.4rem",
+                flexShrink: 0,
+                boxShadow: "0 3px 12px rgba(139, 115, 85, 0.3)",
+                border: "2px solid rgba(255,255,255,0.8)"
+              }}>
+                📅
+              </div>
+              <div style={{ flex: 1 }}>
+                <h4 style={{
+                  margin: "0 0 0.75rem 0",
+                  color: "#231a13",
+                  fontSize: "1.2rem",
+                  fontWeight: 600,
+                  lineHeight: 1.3,
+                  fontFamily: "'Inter', sans-serif"
+                }}>
+                  {event.title}
+                </h4>
+                <p style={{
+                  margin: "0 0 1.5rem 0",
+                  color: "#666",
+                  fontSize: "1rem",
+                  lineHeight: 1.5,
+                  fontFamily: "'Inter', sans-serif"
+                }}>
+                  {event.description.substring(0, 90)}...
+                </p>
+                <div style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}>
+                  <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem"
+                  }}>
+                    <div style={{
+                      width: "8px",
+                      height: "8px",
+                      borderRadius: "50%",
+                      background: "#8B7355"
+                    }} />
+                    <small style={{
+                      color: "#999",
+                      fontSize: "0.9rem",
+                      fontFamily: "'Inter', sans-serif"
+                    }}>
+                      {event.curator} • {event.lastActive}
+                    </small>
+                  </div>
+                  <span style={{
+                    background: "#8B7355",
+                    color: "white",
+                    padding: "0.5rem 1rem",
+                    borderRadius: "20px",
+                    fontSize: "0.9rem",
+                    fontWeight: 600,
+                    fontFamily: "'Inter', sans-serif"
+                  }}>
+                    {event.date}
+                  </span>
+                </div>
+              </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </motion.div>
   </div>
 );
 
-// **[SWIPEABLE COMMUNITY LISTINGS]** Tinder-like card interface
+// Luxury Swipeable Listings Component
 const SwipeableListings = ({ listings, isDarkMode }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(0);
 
   const swipeConfidenceThreshold = 10000;
-  const swipePower = (offset, velocity) => {
-    return Math.abs(offset) * velocity;
-  };
+  const swipePower = (offset, velocity) => Math.abs(offset) * velocity;
 
   const paginate = (newDirection) => {
     setDirection(newDirection);
     setCurrentIndex(prevIndex => {
       if (newDirection === 1) {
-        // Swipe right - interested
         return prevIndex + 1 >= listings.length ? 0 : prevIndex + 1;
       } else {
-        // Swipe left - not interested
         return prevIndex + 1 >= listings.length ? 0 : prevIndex + 1;
       }
     });
@@ -505,87 +910,181 @@ const SwipeableListings = ({ listings, isDarkMode }) => {
     <div style={{
       position: "relative",
       zIndex: 10,
-      padding: "4rem 1rem 6rem",
+      padding: "2rem 1rem 4rem",
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
-      minHeight: "80vh"
+      minHeight: "100vh",
+      background: "linear-gradient(135deg, #fefefe 0%, #f8f6f0 100%)",
+      fontFamily: "'Inter', sans-serif"
     }}>
-      <h1 style={{
-        fontSize: "2.5rem",
-        fontWeight: 600,
-        textAlign: "center",
-        marginBottom: "2rem",
-        color: isDarkMode ? "#E8DCC0" : "#231a13",
-        textTransform: "uppercase",
-        letterSpacing: "0.1em"
-      }}>
-        Find Help in Your Community
-      </h1>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        style={{
+          textAlign: "center",
+          marginBottom: "2rem",
+          padding: "1rem 0"
+        }}
+      >
+        <h1 style={{
+          fontSize: "2.2rem",
+          fontWeight: 600,
+          color: "#231a13",
+          margin: 0,
+          letterSpacing: "0.02em",
+          fontFamily: "'Inter', sans-serif"
+        }}>
+          Discover Community Help
+        </h1>
+        <p style={{
+          fontSize: "1rem",
+          color: "#666",
+          margin: "0.5rem 0 0 0",
+          fontWeight: 400,
+          fontFamily: "'Inter', sans-serif"
+        }}>
+          Swipe to find the perfect match for your needs
+        </p>
+      </motion.div>
 
       <div style={{
         position: "relative",
         width: "100%",
-        maxWidth: "400px",
-        height: "500px",
+        maxWidth: "380px",
+        height: "520px",
         marginBottom: "2rem"
       }}>
+        {[2, 1].map((offset) => {
+          const listing = listings[(currentIndex + offset) % listings.length];
+          if (!listing) return null;
+
+          return (
+            <motion.div
+              key={`bg-${offset}`}
+              style={{
+                position: "absolute",
+                width: "100%",
+                height: "100%",
+                background: "white",
+                borderRadius: "24px",
+                boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+                border: "1px solid rgba(255,255,255,0.9)",
+                transform: `scale(${1 - offset * 0.05}) translateY(${offset * 8}px)`,
+                zIndex: 1 - offset,
+                opacity: 0.7
+              }}
+            />
+          );
+        })}
+
         <motion.div
           key={currentIndex}
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.8, opacity: 0 }}
-          transition={{ duration: 0.3 }}
+          initial={{ scale: 0.9, opacity: 0, rotateY: -10 }}
+          animate={{ scale: 1, opacity: 1, rotateY: 0 }}
+          exit={{ scale: 0.9, opacity: 0, rotateY: 10 }}
+          transition={{
+            duration: 0.4,
+            type: "spring",
+            stiffness: 300,
+            damping: 30
+          }}
           drag="x"
           dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={1}
+          dragElastic={0.7}
           onDragEnd={(e, { offset, velocity }) => {
             const swipe = swipePower(offset.x, velocity.x);
 
             if (swipe < -swipeConfidenceThreshold) {
-              paginate(-1); // Swipe left - not interested
+              paginate(-1);
             } else if (swipe > swipeConfidenceThreshold) {
-              paginate(1); // Swipe right - interested
+              paginate(1);
             }
           }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           style={{
             position: "absolute",
             width: "100%",
             height: "100%",
-            background: isDarkMode ? "rgba(0, 0, 0, 0.95)" : "rgba(251, 248, 241, 0.95)",
-            backdropFilter: "blur(20px)",
-            borderRadius: "20px",
-            padding: "2rem",
-            border: `2px solid ${isDarkMode ? "rgba(129, 115, 105, 0.4)" : "rgba(249, 245, 237, 0.4)"}`,
-            boxShadow: "0 20px 60px rgba(0,0,0,0.1)",
-            cursor: "grab"
+            background: "white",
+            borderRadius: "24px",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+            border: "1px solid rgba(255,255,255,0.9)",
+            cursor: "grab",
+            zIndex: 10,
+            overflow: "hidden"
           }}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98, cursor: "grabbing" }}
         >
-          <div style={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-            <div>
+          <div style={{
+            padding: "2rem 2rem 1rem",
+            borderBottom: "1px solid rgba(232,220,192,0.2)"
+          }}>
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.75rem",
+              marginBottom: "1rem"
+            }}>
               <div style={{
-                backgroundColor: isDarkMode ? "#E8DCC0" : "#231a13",
-                color: isDarkMode ? "#231a13" : "#E8DCC0",
-                padding: "0.5rem 1rem",
-                borderRadius: "20px",
-                display: "inline-block",
-                fontSize: "0.8rem",
-                fontWeight: 600,
-                marginBottom: "1rem",
-                textTransform: "uppercase",
-                letterSpacing: "0.05em"
+                width: "50px",
+                height: "50px",
+                borderRadius: "16px",
+                background: "linear-gradient(135deg, #E8DCC0 0%, #D4C4A8 100%)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "1.5rem",
+                boxShadow: "0 3px 12px rgba(232, 220, 192, 0.3)",
+                border: "2px solid rgba(255,255,255,0.8)"
               }}>
-                {currentListing.category}
+                {currentListing.category === "service" ? "🛠" :
+                 currentListing.category === "skill" ? "🎨" : "📦"}
               </div>
+              <div>
+                <div style={{
+                  background: "#8B7355",
+                  color: "white",
+                  padding: "0.4rem 1rem",
+                  borderRadius: "20px",
+                  fontSize: "0.8rem",
+                  fontWeight: 600,
+                  display: "inline-block",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  fontFamily: "'Inter', sans-serif",
+                  boxShadow: "0 2px 8px rgba(139, 115, 85, 0.3)"
+                }}>
+                  {currentListing.category}
+                </div>
+                <p style={{
+                  fontSize: "0.9rem",
+                  color: "#666",
+                  margin: "0.5rem 0 0 0",
+                  fontFamily: "'Inter', sans-serif"
+                }}>
+                  {currentListing.location} • {currentListing.lastActive}
+                </p>
+              </div>
+            </div>
+          </div>
 
+          <div style={{
+            padding: "1.5rem 2rem",
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between"
+          }}>
+            <div>
               <h2 style={{
-                fontSize: "1.8rem",
+                fontSize: "1.6rem",
                 fontWeight: 700,
-                marginBottom: "1rem",
-                color: isDarkMode ? "#F5F1E7" : "#231a13",
-                lineHeight: 1.2
+                color: "#231a13",
+                margin: "0 0 1rem 0",
+                lineHeight: 1.3,
+                fontFamily: "'Inter', sans-serif"
               }}>
                 {currentListing.title}
               </h2>
@@ -593,44 +1092,77 @@ const SwipeableListings = ({ listings, isDarkMode }) => {
               <p style={{
                 fontSize: "1rem",
                 lineHeight: 1.6,
-                marginBottom: "1.5rem",
-                color: isDarkMode ? "#E8DCC0" : "#231a13",
-                opacity: 0.9
+                color: "#555",
+                margin: 0,
+                flex: 1,
+                fontFamily: "'Inter', sans-serif"
               }}>
                 {currentListing.description}
               </p>
             </div>
 
-            <div>
+            <div style={{
+              marginTop: "2rem",
+              paddingTop: "1.5rem",
+              borderTop: "1px solid rgba(232,220,192,0.2)"
+            }}>
               <div style={{
                 display: "flex",
-                justifyContent: "space-between",
                 alignItems: "center",
-                marginBottom: "1rem"
+                justifyContent: "space-between"
               }}>
                 <div style={{
-                  color: isDarkMode ? "#E8DCC0" : "#231a13",
-                  opacity: 0.7,
-                  fontSize: "0.9rem"
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem"
                 }}>
-                  {currentListing.location}
+                  <div style={{
+                    width: "32px",
+                    height: "32px",
+                    borderRadius: "50%",
+                    background: "#8B7355",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "0.8rem",
+                    boxShadow: "0 2px 8px rgba(139, 115, 85, 0.3)"
+                  }}>
+                    👤
+                  </div>
+                  <div>
+                    <p style={{
+                      fontSize: "0.9rem",
+                      fontWeight: 600,
+                      color: "#231a13",
+                      margin: 0,
+                      fontFamily: "'Inter', sans-serif"
+                    }}>
+                      {currentListing.helper}
+                    </p>
+                    <p style={{
+                      fontSize: "0.8rem",
+                      color: "#999",
+                      margin: "0.1rem 0 0 0",
+                      fontFamily: "'Inter', sans-serif"
+                    }}>
+                      Helper
+                    </p>
+                  </div>
                 </div>
+
                 <div style={{
-                  color: isDarkMode ? "#E8DCC0" : "#231a13",
-                  fontWeight: 600,
-                  fontSize: "1.1rem"
+                  background: "#8B7355",
+                  color: "white",
+                  padding: "0.75rem 1.25rem",
+                  borderRadius: "16px",
+                  fontSize: "0.9rem",
+                  fontWeight: 700,
+                  textAlign: "center",
+                  fontFamily: "'Inter', sans-serif",
+                  boxShadow: "0 4px 16px rgba(139, 115, 85, 0.3)"
                 }}>
                   {currentListing.compensation}
                 </div>
-              </div>
-
-              <div style={{
-                color: isDarkMode ? "#E8DCC0" : "#231a13",
-                opacity: 0.6,
-                fontSize: "0.8rem",
-                textAlign: "center"
-              }}>
-                By {currentListing.helper} • {currentListing.lastActive}
               </div>
             </div>
           </div>
@@ -639,67 +1171,82 @@ const SwipeableListings = ({ listings, isDarkMode }) => {
 
       <div style={{
         display: "flex",
-        gap: "2rem",
+        gap: "3rem",
+        alignItems: "center",
         marginBottom: "2rem"
       }}>
         <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.1, y: -2 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => paginate(-1)}
           style={{
-            width: "60px",
-            height: "60px",
+            width: "70px",
+            height: "70px",
             borderRadius: "50%",
             border: "none",
-            backgroundColor: "#ff4757",
+            background: "#CD853F",
             color: "white",
-            fontSize: "1.5rem",
+            fontSize: "1.8rem",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            boxShadow: "0 4px 16px rgba(255, 71, 87, 0.3)"
+            boxShadow: "0 6px 20px rgba(205, 133, 63, 0.4)",
+            transition: "all 0.2s ease"
           }}
         >
           ✕
         </motion.button>
 
         <motion.button
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
+          whileHover={{ scale: 1.1, y: -2 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => paginate(1)}
           style={{
-            width: "60px",
-            height: "60px",
+            width: "70px",
+            height: "70px",
             borderRadius: "50%",
             border: "none",
-            backgroundColor: "#2ed573",
+            background: "#A0522D",
             color: "white",
-            fontSize: "1.5rem",
+            fontSize: "1.8rem",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            boxShadow: "0 4px 16px rgba(46, 213, 115, 0.3)"
+            boxShadow: "0 6px 20px rgba(160, 82, 45, 0.4)",
+            transition: "all 0.2s ease"
           }}
         >
           ♥
         </motion.button>
       </div>
 
-      <div style={{
-        textAlign: "center",
-        color: isDarkMode ? "#E8DCC0" : "#231a13",
-        opacity: 0.7,
-        fontSize: "0.9rem"
-      }}>
-        Swipe left to skip • Swipe right to connect • Or use buttons below
-      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8 }}
+        style={{
+          textAlign: "center",
+          color: "#666",
+          fontSize: "0.95rem",
+          fontWeight: 500,
+          maxWidth: "300px",
+          lineHeight: 1.5,
+          fontFamily: "'Inter', sans-serif"
+        }}
+      >
+        Swipe right to connect • Swipe left to skip
+        <br />
+        <span style={{ fontSize: "0.85rem", opacity: 0.8 }}>
+          Find the perfect community match for your needs
+        </span>
+      </motion.div>
     </div>
   );
 };
 
-// **[ART GALLERY ACCESSIBLE NAVIGATION]**
+// Luxury Navigation Component
 const ArtisticNavigation = ({ currentPage, onNavigate, onLogout }) => (
   <motion.nav
     initial={{ opacity: 0, y: -20 }}
@@ -798,11 +1345,11 @@ const ArtisticNavigation = ({ currentPage, onNavigate, onLogout }) => (
   </motion.nav>
 );
 
+// Main App Component
 function App() {
   const [user, setUser] = useState(null);
   const [page, setPage] = useState("dashboard");
 
-  // Light mode only for now
   const isDarkMode = false;
 
   function onLoginSuccess(userData) {
@@ -845,7 +1392,6 @@ function App() {
         )}
       </div>
 
-      {/* Art Gallery Footer */}
       <footer style={{
         position: "relative",
         backgroundColor: "#000000",
