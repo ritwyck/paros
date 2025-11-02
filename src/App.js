@@ -592,7 +592,8 @@ const Dashboard = ({ user, isDarkMode, onNavigate, listings, events }) => {
       style={{
         maxWidth: "1400px",
         margin: "5rem auto 0",
-        padding: "0 2rem"
+        padding: isMobile ? "0 1rem" : "0 2rem",
+        marginLeft: isMobile ? "-0.5rem" : "-1rem"
       }}
     >
       <motion.h2
@@ -614,8 +615,8 @@ const Dashboard = ({ user, isDarkMode, onNavigate, listings, events }) => {
 
       <div style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
-        gap: "3rem"
+        gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fit, minmax(400px, 1fr))",
+        gap: isMobile ? "2rem" : "3rem"
       }}>
         {/* Local Opportunities */}
         <div>
@@ -926,7 +927,6 @@ const SwipeableListings = ({ listings, isDarkMode }) => {
       flexDirection: "column",
       alignItems: "center",
       minHeight: "100vh",
-      background: "linear-gradient(135deg, #fefefe 0%, #f8f6f0 100%)",
       fontFamily: "'Inter', sans-serif"
     }}>
       <motion.div
@@ -1294,14 +1294,16 @@ const CleanNavigation = ({ currentPage, onNavigate, onLogout }) => {
         }}
       >
         <div style={{
-          maxWidth: 1200,
-          margin: "0 auto",
+          width: "100%",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           position: "relative"
         }}>
-          {/* PAROS Logo - positioned on the left */}
+          {/* Left side - empty for balance */}
+          <div style={{ width: isMobile ? "40px" : "0px" }} />
+
+          {/* PAROS Logo - centered on mobile, left on desktop */}
           <h1 style={{
             fontSize: isMobile ? "1.5rem" : "2rem",
             fontWeight: 600,
@@ -1309,7 +1311,12 @@ const CleanNavigation = ({ currentPage, onNavigate, onLogout }) => {
             cursor: "pointer",
             margin: 0,
             letterSpacing: "0.05em",
-            textTransform: "uppercase"
+            textTransform: "uppercase",
+            ...(isMobile ? {
+              position: "absolute",
+              left: "50%",
+              transform: "translateX(-50%)"
+            } : {})
           }}>
             Paros
           </h1>
@@ -1383,7 +1390,7 @@ const CleanNavigation = ({ currentPage, onNavigate, onLogout }) => {
             </div>
           )}
 
-          {/* Mobile Hamburger Menu Button - Only show on mobile */}
+          {/* Mobile Hamburger Menu Button - positioned on the right */}
           {isMobile && (
             <motion.button
               whileHover={{ scale: 1.05 }}

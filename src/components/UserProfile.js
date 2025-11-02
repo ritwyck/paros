@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { MapContainer, TileLayer } from "react-leaflet";
 import L from "leaflet";
@@ -64,13 +64,25 @@ const lendingOptions = [
 
 function UserProfile({ user, setUser, isDarkMode }) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check for mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const [profileData, setProfileData] = useState({
     username: user.username || "",
     preferredName: user.preferredName || "",
-    country: user.country || "India",
-    province: user.province || "Maharashtra",
-    city: user.city || "Pune",
+    country: user.country || "Netherlands",
+    province: user.province || "Limburg",
+    city: user.city || "Maastricht",
     pinCode: user.pinCode || "",
     aboutMe: user.aboutMe || "",
     skills: user.skills || [],
@@ -85,6 +97,7 @@ function UserProfile({ user, setUser, isDarkMode }) {
   const [currentSection, setCurrentSection] = useState("basic");
   const [customSkillInput, setCustomSkillInput] = useState("");
   const [customLendingInput, setCustomLendingInput] = useState("");
+  const [showAllPhotos, setShowAllPhotos] = useState(false);
 
   const handleInputChange = (field, value) => {
     setProfileData(prev => ({
@@ -270,11 +283,21 @@ function UserProfile({ user, setUser, isDarkMode }) {
                 Location
               </h2>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                <p style={{ color: isDarkMode ? "#E8DCC0" : "#231a13", margin: 0, fontSize: "1.1rem" }}>
-                  📍 {profileData.city}, {profileData.province}, {profileData.country}
+                <p style={{
+                  color: isDarkMode ? "#E8DCC0" : "#231a13",
+                  margin: 0,
+                  fontSize: "1.1rem",
+                  textAlign: "left"
+                }}>
+                  {profileData.city}, {profileData.province}, {profileData.country}
                 </p>
                 {profileData.pinCode && (
-                  <p style={{ color: isDarkMode ? "#E8DCC0" : "#666", margin: 0, fontSize: "0.9rem" }}>
+                  <p style={{
+                    color: isDarkMode ? "#E8DCC0" : "#666",
+                    margin: 0,
+                    fontSize: "0.9rem",
+                    textAlign: "left"
+                  }}>
                     PIN: {profileData.pinCode}
                   </p>
                 )}
@@ -426,7 +449,7 @@ function UserProfile({ user, setUser, isDarkMode }) {
                 letterSpacing: "0.05em"
               }}
             >
-              Edit Profile
+              Edit
             </motion.button>
           </div>
         </motion.div>
@@ -455,9 +478,16 @@ function UserProfile({ user, setUser, isDarkMode }) {
           boxShadow: "0 20px 60px rgba(0,0,0,0.1)"
         }}
       >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+        <div style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: isMobile ? "1.5rem" : "2rem",
+          flexDirection: isMobile ? "column" : "row",
+          gap: isMobile ? "1rem" : "0"
+        }}>
           <h1 style={{
-            fontSize: "2.5rem",
+            fontSize: isMobile ? "2rem" : "2.5rem",
             fontWeight: 700,
             color: isDarkMode ? "#E8DCC0" : "#231a13",
             textTransform: "uppercase",
@@ -471,12 +501,12 @@ function UserProfile({ user, setUser, isDarkMode }) {
             whileTap={{ scale: 0.95 }}
             onClick={() => setIsEditing(false)}
             style={{
-              padding: "0.8rem 1.5rem",
+              padding: isMobile ? "0.7rem 1.2rem" : "0.8rem 1.5rem",
               backgroundColor: "#E8DCC0",
               color: "#231a13",
               border: "2px solid #231a13",
               borderRadius: "25px",
-              fontSize: "1rem",
+              fontSize: isMobile ? "0.9rem" : "1rem",
               fontWeight: 600,
               cursor: "pointer",
               textTransform: "uppercase",
@@ -490,10 +520,11 @@ function UserProfile({ user, setUser, isDarkMode }) {
         {/* Section Navigation */}
         <div style={{
           display: "flex",
-          gap: "0.5rem",
-          marginBottom: "2rem",
+          gap: isMobile ? "0.3rem" : "0.5rem",
+          marginBottom: isMobile ? "1.5rem" : "2rem",
           flexWrap: "wrap",
-          justifyContent: "center"
+          justifyContent: isMobile ? "flex-start" : "center",
+          flexDirection: isMobile ? "row" : "row"
         }}>
           {sections.map(section => (
             <motion.button
@@ -502,18 +533,20 @@ function UserProfile({ user, setUser, isDarkMode }) {
               whileTap={{ scale: 0.95 }}
               onClick={() => setCurrentSection(section.id)}
               style={{
-                padding: "0.8rem 1.2rem",
+                padding: isMobile ? "0.6rem 0.8rem" : "0.8rem 1.2rem",
                 borderRadius: "25px",
                 border: currentSection === section.id ? "2px solid #231a13" : "2px solid #E8DCC0",
                 background: currentSection === section.id ? "#231a13" : "#E8DCC0",
                 color: currentSection === section.id ? "#E8DCC0" : "#231a13",
                 cursor: "pointer",
-                fontSize: "0.9rem",
+                fontSize: isMobile ? "0.8rem" : "0.9rem",
                 fontWeight: 600,
                 display: "flex",
                 alignItems: "center",
-                gap: "0.5rem",
-                transition: "all 0.3s ease"
+                gap: "0.3rem",
+                transition: "all 0.3s ease",
+                whiteSpace: "nowrap",
+                flexShrink: 0
               }}
             >
               <span>{section.icon}</span>
@@ -717,60 +750,140 @@ function UserProfile({ user, setUser, isDarkMode }) {
                 gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
                 gap: "1rem"
               }}>
-                {profileData.profileImages.map((image, index) => (
-                  <div key={index} style={{ textAlign: "center" }}>
-                    <div style={{
-                      width: "120px",
-                      height: "120px",
-                      borderRadius: "12px",
-                      border: "2px solid #E8DCC0",
-                      margin: "0 auto 0.5rem",
-                      overflow: "hidden",
-                      background: "#f5f5f5",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      cursor: "pointer"
-                    }}>
-                      {image ? (
-                        <img
-                          src={image}
-                          alt={`Profile ${index + 1}`}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover"
-                          }}
-                        />
-                      ) : (
-                        <span style={{ color: "#999", fontSize: "2rem" }}>Camera</span>
-                      )}
-                    </div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleImageUpload(index, e.target.files[0])}
-                      style={{ display: "none" }}
-                      id={`photo-${index}`}
-                    />
-                    <label
-                      htmlFor={`photo-${index}`}
-                      style={{
-                        display: "inline-block",
-                        padding: "0.4rem 0.8rem",
-                        background: "#E8DCC0",
-                        color: "#231a13",
-                        borderRadius: "6px",
-                        cursor: "pointer",
-                        fontSize: "0.8rem",
-                        fontWeight: 600
-                      }}
-                    >
-                      {image ? "Change" : "Upload"}
-                    </label>
+                {/* Show first image slot always */}
+                <div style={{ textAlign: "center" }}>
+                  <div style={{
+                    width: "120px",
+                    height: "120px",
+                    borderRadius: "12px",
+                    border: "2px solid #E8DCC0",
+                    margin: "0 auto 0.5rem",
+                    overflow: "hidden",
+                    background: "#f5f5f5",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer"
+                  }}>
+                    {profileData.profileImages[0] ? (
+                      <img
+                        src={profileData.profileImages[0]}
+                        alt="Profile 1"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover"
+                        }}
+                      />
+                    ) : (
+                      <span style={{ color: "#999", fontSize: "2rem" }}>Camera</span>
+                    )}
                   </div>
-                ))}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(0, e.target.files[0])}
+                    style={{ display: "none" }}
+                    id="photo-0"
+                  />
+                  <label
+                    htmlFor="photo-0"
+                    style={{
+                      display: "inline-block",
+                      padding: "0.4rem 0.8rem",
+                      background: "#E8DCC0",
+                      color: "#231a13",
+                      borderRadius: "6px",
+                      cursor: "pointer",
+                      fontSize: "0.8rem",
+                      fontWeight: 600
+                    }}
+                  >
+                    {profileData.profileImages[0] ? "Change" : "Upload"}
+                  </label>
+                </div>
+
+                {/* Show additional image slots only if showAllPhotos is true */}
+                {showAllPhotos && profileData.profileImages.slice(1, 10).map((image, index) => {
+                  const actualIndex = index + 1;
+                  return (
+                    <div key={actualIndex} style={{ textAlign: "center" }}>
+                      <div style={{
+                        width: "120px",
+                        height: "120px",
+                        borderRadius: "12px",
+                        border: "2px solid #E8DCC0",
+                        margin: "0 auto 0.5rem",
+                        overflow: "hidden",
+                        background: "#f5f5f5",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer"
+                      }}>
+                        {image ? (
+                          <img
+                            src={image}
+                            alt={`Profile ${actualIndex + 1}`}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover"
+                            }}
+                          />
+                        ) : (
+                          <span style={{ color: "#999", fontSize: "2rem" }}>Camera</span>
+                        )}
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleImageUpload(actualIndex, e.target.files[0])}
+                        style={{ display: "none" }}
+                        id={`photo-${actualIndex}`}
+                      />
+                      <label
+                        htmlFor={`photo-${actualIndex}`}
+                        style={{
+                          display: "inline-block",
+                          padding: "0.4rem 0.8rem",
+                          background: "#E8DCC0",
+                          color: "#231a13",
+                          borderRadius: "6px",
+                          cursor: "pointer",
+                          fontSize: "0.8rem",
+                          fontWeight: 600
+                        }}
+                      >
+                        {image ? "Change" : "Upload"}
+                      </label>
+                    </div>
+                  );
+                })}
               </div>
+
+              {/* Add More Images Button */}
+              {!showAllPhotos && (
+                <div style={{ textAlign: "center", marginTop: "2rem" }}>
+                  <button
+                    onClick={() => setShowAllPhotos(true)}
+                    style={{
+                      padding: "0.8rem 2rem",
+                      backgroundColor: "#231a13",
+                      color: "#E8DCC0",
+                      border: "2px solid #231a13",
+                      borderRadius: "25px",
+                      fontSize: "1rem",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em"
+                    }}
+                  >
+                    Add More Images
+                  </button>
+                </div>
+              )}
             </motion.div>
           )}
 
