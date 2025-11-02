@@ -104,16 +104,15 @@ nav > strong {
 
 /* Modern gallery-style button */
 button, .btn {
-  background: var(--espresso);
-  color: var(--white);
+  background: transparent;
+  color: var(--espresso);
   font-family: var(--font-sans);
   font-size: 1.09rem;
   border: none;
   border-radius: 12px;
   font-weight: 700;
   padding: 0.84rem 2.4rem;
-  margin: 0.3rem 0.4rem;
-  box-shadow: 0 1px 8px rgba(35,26,19,0.09), 0 1.6px 5px rgba(0,77,64,0.07);
+  margin: 0.5rem 0.8rem;
   transition: border-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.17s, background 0.2s;
   border-bottom: 3px solid transparent;
   cursor: pointer;
@@ -123,27 +122,14 @@ button, .btn {
 }
 
 button:hover, button:focus, .btn:hover, .btn:focus {
-  color: var(--emerald);
-  background: var(--espresso);
-  border-bottom: 3px solid var(--emerald);
-  transform: translateY(-1px) scale(1.05);
-  box-shadow: 0 8px 28px rgba(0, 77, 64, 0.11), 0 1.6px 5px rgba(0,77,64,0.17);
+  color: var(--espresso);
+  background: transparent;
+  border-bottom: 3px solid transparent;
+  transform: none;
+  box-shadow: none;
 }
 
-/* Subtle fun effect: emerald bar wipes in below the button on hover */
-button::after, .btn::after {
-  content: '';
-  display: block;
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 3px;
-  background: var(--emerald);
-  opacity: 0;
-  transition: opacity 0.22s;
-}
-button:hover::after, button:focus::after, .btn:hover::after, .btn:focus::after {
-  opacity: 1;
-}
+/* Removed hover effects */
 
 /* Card and Panel Styling */
 .card, .panel {
