@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, useScroll } from "framer-motion";
 import LandingPage from "./components/LandingPage";
 import UserProfile from "./components/UserProfile";
+import Events from "./components/Events";
 import { MapContainer, TileLayer } from "react-leaflet";
 import L from "leaflet";
 
@@ -1300,6 +1301,7 @@ const CleanNavigation = ({ currentPage, onNavigate, onLogout }) => {
           justifyContent: "space-between",
           position: "relative"
         }}>
+          {/* PAROS Logo - positioned on the left */}
           <h1 style={{
             fontSize: isMobile ? "1.5rem" : "2rem",
             fontWeight: 600,
@@ -1312,7 +1314,7 @@ const CleanNavigation = ({ currentPage, onNavigate, onLogout }) => {
             Paros
           </h1>
 
-          {/* Desktop Navigation - Show on tablets and up */}
+          {/* Desktop Navigation - buttons grouped on the right */}
           {!isMobile && (
             <div style={{
               display: "flex",
@@ -1352,13 +1354,6 @@ const CleanNavigation = ({ currentPage, onNavigate, onLogout }) => {
                   {item.label}
                 </motion.button>
               ))}
-
-              <div style={{
-                width: "1px",
-                height: "24px",
-                background: "rgba(249, 245, 237, 0.4)",
-                margin: "0 1rem"
-              }} />
 
               <motion.button
                 whileHover={{ scale: 1.05 }}
